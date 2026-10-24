@@ -1,0 +1,230 @@
+/* Ported from the Framer "ManifestoStickers" code component (badge style, sides layout). */
+
+.ms {
+  position: relative;
+  width: 100%;
+  container-type: inline-size;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  padding: clamp(56px, 7cqw, 112px) 0 clamp(72px, 8cqw, 128px);
+}
+
+.marquee {
+  white-space: nowrap;
+  overflow: hidden;
+  margin-bottom: clamp(56px, 6cqw, 96px);
+}
+.track {
+  display: inline-flex;
+  align-items: center;
+  will-change: transform;
+}
+.word {
+  font-family: var(--font-display);
+  font-size: clamp(84px, 13.5cqw, 240px);
+  line-height: 0.9;
+  text-transform: uppercase;
+  padding: 0 0.12em;
+}
+.star {
+  color: var(--primary);
+  font-size: clamp(40px, 6cqw, 110px);
+  line-height: 1;
+  padding: 0 0.18em;
+  transform: translateY(-0.06em);
+}
+
+.wrap {
+  position: relative;
+  width: min(68%, 980px);
+  margin: 0 auto;
+}
+.stickers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.quote {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  text-align: center;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: clamp(20px, 2.15cqw, 34px);
+  line-height: 1.28;
+  letter-spacing: 0.005em;
+  white-space: pre-line;
+}
+
+/* Scatter layout (Our Story): stickers float over/around the quote. */
+.scatter .wrap {
+  width: min(76%, 1040px);
+}
+.scatter .quote {
+  pointer-events: none;
+}
+.scatter .st {
+  width: clamp(100px, 10cqw, 150px);
+}
+.w {
+  transition: opacity 0.35s ease-out;
+}
+
+.st {
+  position: absolute;
+  z-index: 1;
+  width: clamp(112px, 11.4cqw, 168px);
+  transform: rotate(var(--r));
+  pointer-events: auto;
+}
+.pop {
+  opacity: 0;
+  transform: scale(0.3) rotate(-20deg);
+  transition:
+    opacity 0.3s ease-out,
+    transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition-delay: var(--d);
+}
+.isIn .pop {
+  opacity: 1;
+  transform: none;
+}
+.float {
+  animation: float var(--fd) ease-in-out infinite;
+  animation-delay: var(--fdl);
+}
+.blob {
+  position: relative;
+  display: block;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: default;
+  container-type: inline-size;
+}
+.blob:hover {
+  transform: scale(1.12) rotate(-6deg);
+}
+.blob svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.16)) drop-shadow(0 1px 2px rgba(0, 0, 0, 0.12));
+}
+.blob span {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sticker);
+  font-size: 17cqw;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  padding-bottom: 9%;
+  transform: rotate(-6deg) skewX(-6deg);
+  text-transform: uppercase;
+}
+
+.cta {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(40px, 4cqw, 64px);
+}
+.cta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 20px 0 26px;
+  border: 2px solid var(--primary);
+  border-radius: 999px;
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    background 0.18s ease-out,
+    color 0.18s ease-out,
+    transform 0.1s ease-out;
+}
+.cta a svg {
+  display: block;
+  color: var(--primary);
+  transition:
+    transform 0.18s ease-out,
+    color 0.18s ease-out;
+}
+.cta a:hover {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.cta a:hover svg {
+  color: var(--on-primary);
+  transform: translateX(4px);
+}
+.cta a:active {
+  transform: scale(0.97);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  50% {
+    transform: translateY(-8px) rotate(3deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pop {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .float {
+    animation: none;
+  }
+  .w {
+    opacity: 1 !important;
+    transition: none;
+  }
+}
+
+@container (max-width: 1000px) {
+  .wrap,
+  .scatter .wrap {
+    width: auto;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+  .scatter .st {
+    width: clamp(64px, 12cqw, 96px);
+  }
+  .ms:not(.scatter) .stickers {
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 10px;
+    margin-bottom: 28px;
+  }
+  .ms:not(.scatter) .st {
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: clamp(92px, 19cqw, 128px);
+  }
+}
+
+@container (max-width: 600px) {
+  .quote {
+    font-size: clamp(18px, 5.2cqw, 24px);
+  }
+}

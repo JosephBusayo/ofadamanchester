@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+/* Ofada brand tokens — sampled from the printed menu (design/reference/ofada-menu.jpg).
+   Components use these tokens only; no raw hex values. See CLAUDE.md → Colours. */
+:root {
+  --bg: #f9f1e3;
+  --bg-alt: #f1e2c8;
+  --primary: #3e1a0a;
+  --primary-light: #5a2e14;
+  --primary-dark: #2a1006;
+  --accent: #ebcfa8;
+  --ink: #2a1006;
+  --on-primary: #f9f1e3;
+  --on-accent: #3e1a0a;
+  --white: #ffffff;
+  /* Highlighted text (accent words, prices) — the main brown is too close to --ink for text. */
+  --highlight: #9c5a2b;
+  /* Receipt paper */
+  --paper: #fffdf8;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-alt: var(--bg-alt);
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+  --color-accent: var(--accent);
+  --color-ink: var(--ink);
+  --color-on-primary: var(--on-primary);
+  --color-on-accent: var(--on-accent);
+  --color-white: var(--white);
+  --color-highlight: var(--highlight);
+  --color-paper: var(--paper);
+
+  --font-display: var(--font-league-gothic), "Oswald", sans-serif;
+  --font-sans: var(--font-oswald), var(--font-inter), sans-serif;
+  --font-wordmark: var(--font-bowlby), sans-serif;
+  --font-mono: var(--font-space-mono), monospace;
+  --font-sticker: var(--font-knewave), cursive;
+  --font-marker: var(--font-permanent-marker), cursive;
+}
+
+/* Framer breakpoints: phone < 810px, tablet 810–1199px, desktop ≥ 1200px. */
+@theme {
+  --breakpoint-tablet: 810px;
+  --breakpoint-desktop: 1200px;
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

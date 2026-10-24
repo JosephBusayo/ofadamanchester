@@ -1,0 +1,350 @@
+/* Visual language from the Framer "Order Sheet" (.os-*): rounded cream panel, red kicker,
+   League Gothic title, white bordered cards that lift on hover. Desktop/tablet: slides in
+   from the right. Phone (≤600px): bottom sheet with a grab handle, as in Framer. */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(17, 17, 17, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-out;
+}
+.overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sheet {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10001;
+  width: min(480px, 100%);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  border-radius: 24px 0 0 24px;
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.5);
+  transform: translateX(100%);
+  visibility: hidden;
+  transition:
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s linear 0.32s;
+}
+.sheet.open {
+  transform: none;
+  visibility: visible;
+  transition:
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    visibility 0s;
+}
+
+.head {
+  position: relative;
+  padding: 32px 28px 0;
+}
+.close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.16s ease-out;
+}
+.close:hover {
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+}
+.kicker {
+  margin: 0 0 6px;
+  padding-right: 40px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--highlight);
+}
+.title {
+  margin: 0 0 22px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 52px;
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 28px;
+  overscroll-behavior: contain;
+}
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0 0 4px;
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  grid-template-areas:
+    "img txt price"
+    "img actions actions";
+  column-gap: 14px;
+  row-gap: 10px;
+  padding: 12px 16px 12px 12px;
+  border: 2px solid var(--ink);
+  border-radius: 18px;
+  background: var(--white);
+  transition:
+    transform 0.12s ease-out,
+    box-shadow 0.16s ease-out;
+}
+.item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 0 var(--ink);
+}
+.item.bad {
+  border-style: dashed;
+  opacity: 0.75;
+}
+.thumb {
+  grid-area: img;
+  position: relative;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-alt);
+}
+.thumb img {
+  object-fit: cover;
+}
+.txt {
+  grid-area: txt;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.name {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.1;
+}
+.note {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.35;
+  opacity: 0.6;
+}
+.warn {
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--highlight);
+  font-weight: 600;
+}
+.price {
+  grid-area: price;
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--highlight);
+  white-space: nowrap;
+}
+.actions {
+  grid-area: actions;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.stepper button {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.16s ease-out,
+    color 0.16s ease-out;
+}
+.stepper button:hover:not(:disabled) {
+  background: var(--ink);
+  color: var(--bg);
+}
+.stepper button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.stepper output {
+  min-width: 28px;
+  text-align: center;
+  font-weight: 600;
+}
+.remove {
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  opacity: 0.7;
+  cursor: pointer;
+}
+.remove:hover {
+  opacity: 1;
+  color: var(--highlight);
+}
+
+.empty {
+  padding: 8px 0 24px;
+}
+.empty p {
+  margin: 0 0 22px;
+  font-size: 18px;
+  line-height: 1.4;
+  opacity: 0.75;
+}
+
+.foot {
+  padding: 0 28px 28px;
+}
+.sep {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 22px 0 12px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+.sep::before,
+.sep::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.35;
+}
+.subtotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+  font-size: 20px;
+  font-weight: 600;
+}
+.subtotal span:last-child {
+  font-size: 24px;
+  font-weight: 700;
+}
+.buttons {
+  display: grid;
+  gap: 10px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  background: transparent;
+  font-weight: 600;
+  font-size: 16px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 0.16s ease-out,
+    color 0.16s ease-out;
+}
+.btn:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+.btnPrimary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+.btnPrimary:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.footNote {
+  margin: 14px 0 0;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.4;
+  opacity: 0.55;
+}
+
+@media (max-width: 600px) {
+  .sheet {
+    top: auto;
+    left: 0;
+    width: 100%;
+    max-height: 92dvh;
+    border-radius: 24px 24px 0 0;
+    transform: translateY(100%);
+  }
+  .sheet::before {
+    content: "";
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    width: 44px;
+    height: 5px;
+    margin-left: -22px;
+    border-radius: 3px;
+    background: currentColor;
+    opacity: 0.2;
+  }
+  .head {
+    padding: 28px 20px 0;
+  }
+  .title {
+    font-size: 44px;
+  }
+  .body {
+    padding: 0 20px;
+  }
+  .foot {
+    padding: 0 20px calc(20px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .sheet,
+  .item {
+    transition: none;
+  }
+}

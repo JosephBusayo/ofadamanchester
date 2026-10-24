@@ -1,0 +1,73 @@
+/* Ported from the Framer menu filter. Pills float over the content (no strip). */
+
+/* The sticky positioning lives on the parent in the page (it must be a direct child of
+   the tall page column, or it has no room to stick). */
+.wrap {
+  width: 100%;
+  container-type: inline-size;
+  pointer-events: none;
+}
+
+.nav {
+  width: 100%;
+  padding: 10px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.nav::-webkit-scrollbar {
+  display: none;
+}
+
+.nav a {
+  pointer-events: auto;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color 0.18s ease-out,
+    background-color 0.18s ease-out,
+    border-color 0.18s ease-out;
+}
+.nav a:hover {
+  border-color: var(--primary);
+  color: var(--highlight);
+}
+.nav a.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+.nav a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+@container (max-width: 760px) {
+  .nav {
+    justify-content: flex-start;
+    gap: 8px;
+    pointer-events: auto;
+  }
+  .nav a {
+    font-size: 14px;
+    padding: 9px 14px;
+  }
+}

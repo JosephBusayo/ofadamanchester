@@ -1,0 +1,15 @@
+export const cartCopy = {
+  kicker: "YOUR ORDER",
+  title: "YOUR CART",
+  emptyTitle: "NOTHING HERE YET",
+  emptyBody: "Add an Ofada Box, a meal pack or some sauce to take home.",
+  viewMenu: "VIEW MENU",
+  keepBrowsing: "KEEP BROWSING",
+  checkout: "CHECKOUT",
+  subtotal: "Subtotal",
+  remove: "Remove",
+  unavailable: "No longer available — please remove it.",
+  separator: "pickup or delivery next",
+  foot: "Delivery fee is worked out from your postcode at checkout. Prices include VAT where applicable.",
+  saturdayOnly: "Saturdays only",
+};

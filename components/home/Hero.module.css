@@ -1,0 +1,403 @@
+/* Ported from the Framer "Hero" code component. Sizes use container units (cqw)
+   so the layout scales with the section width exactly like the reference. */
+
+.hs {
+  position: relative;
+  width: 100%;
+  container-type: inline-size;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  /* Title metrics (League Gothic) */
+  --tlh: 0.84;
+  --ttop: max(8px, min(96px, 6.667cqw));
+  --artw: 90%;
+  --overlap-pct: 0.34; /* how far the image rises into the headline */
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  mix-blend-mode: multiply;
+  opacity: 0.12;
+}
+
+.inner {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: var(--ttop) 32px 0;
+}
+
+.title {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: var(--tlh);
+  white-space: nowrap;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.1em;
+  visibility: hidden;
+}
+.title.isFit {
+  visibility: visible;
+}
+.title span {
+  display: inline-block;
+  animation: up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.title span:nth-child(2) {
+  animation-delay: 0.08s;
+}
+.title span:nth-child(3) {
+  animation-delay: 0.16s;
+}
+.accent {
+  color: var(--highlight);
+}
+
+.stage {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.copy {
+  position: absolute;
+  z-index: 5;
+  left: 0;
+  top: clamp(20px, 2.4cqw, 40px);
+  width: min(30%, 420px);
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  animation: up 0.6s 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.copy p {
+  margin: 0;
+  font-weight: 500;
+  font-size: clamp(18px, 1.7cqw, 28px);
+  line-height: 1.25;
+}
+
+.btns {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 58px;
+  padding: 0 34px;
+  border-radius: 999px;
+  border: 2px solid var(--ink);
+  font-weight: 600;
+  font-size: 19px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background 0.16s ease-out,
+    color 0.16s ease-out,
+    border-color 0.16s ease-out,
+    transform 0.1s ease-out;
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btnPrimary {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.btnPrimary:hover {
+  background: var(--ink);
+}
+.btnGhost {
+  background: var(--bg);
+  color: var(--ink);
+}
+.btnGhost:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.art {
+  position: relative;
+  z-index: 2;
+  width: var(--artw);
+  align-self: flex-end;
+  margin-right: -32px;
+  margin-top: var(--overlap, 0px);
+}
+.layer {
+  will-change: transform;
+}
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  animation: burger 0.9s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sticker {
+  position: absolute;
+  z-index: 3;
+}
+.sticker svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.18));
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.sticker:hover svg {
+  transform: scale(1.08) rotate(-4deg);
+}
+.pop {
+  animation: pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.float {
+  animation: float 5s ease-in-out infinite;
+}
+.s1 {
+  width: 15%;
+  left: 20%;
+  top: 12%;
+}
+.s1 .pop {
+  animation-delay: 0.55s;
+}
+.s1 .float {
+  animation-duration: 5.2s;
+}
+.s2 {
+  width: 17%;
+  right: 8%;
+  top: 10%;
+}
+.s2 .pop {
+  animation-delay: 0.7s;
+}
+.s2 .float {
+  animation-duration: 6s;
+  animation-delay: -2s;
+}
+.s3 {
+  width: 14%;
+  right: 10%;
+  top: 52%;
+}
+.s3 .pop {
+  animation-delay: 0.85s;
+}
+.s3 .float {
+  animation-duration: 4.6s;
+  animation-delay: -1s;
+}
+
+.ticker {
+  position: relative;
+  z-index: 6;
+  margin-top: -3cqw;
+  background: var(--primary);
+  color: var(--on-primary);
+  overflow: hidden;
+  padding: 16px 0;
+}
+.track {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+.group {
+  display: flex;
+  align-items: center;
+}
+.item {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3.2cqw, 52px);
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding: 0 32px;
+}
+.star {
+  color: var(--accent);
+  font-size: clamp(22px, 2.4cqw, 38px);
+  line-height: 1;
+}
+
+@keyframes up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes burger {
+  from {
+    opacity: 0;
+    transform: translateY(60px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-18deg);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  50% {
+    transform: translateY(-10px) rotate(3deg);
+  }
+}
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hs *,
+  .track {
+    animation: none !important;
+  }
+  .layer {
+    transform: none !important;
+  }
+}
+
+@container (max-width: 900px) {
+  .inner {
+    padding: var(--ttop) 20px 0;
+  }
+  .copy {
+    position: relative;
+    top: auto;
+    width: auto;
+    padding-top: 28px;
+    gap: 20px;
+  }
+  .art {
+    width: auto;
+    align-self: stretch;
+    margin: 8px -20px 0;
+  }
+  .s1 {
+    left: 8%;
+    top: 10%;
+    width: 20%;
+  }
+  .s2 {
+    right: 4%;
+    top: 6%;
+    width: 21%;
+  }
+  .s3 {
+    right: 8%;
+    top: 52%;
+    width: 17%;
+  }
+  .ticker {
+    margin-top: -7cqw;
+    padding: 14px 0;
+  }
+}
+
+/* Phone: image first, then headline + copy, ticker last */
+@container (max-width: 809px) {
+  .inner {
+    padding-top: 12px;
+  }
+  .stage {
+    display: contents;
+  }
+  .art {
+    order: -1;
+    margin: 0 -20px 4px;
+  }
+  .title {
+    order: 0;
+  }
+  .copy {
+    order: 1;
+    padding-top: 20px;
+  }
+  .ticker {
+    margin-top: 36px;
+  }
+  .s1 {
+    left: 4%;
+    top: 4%;
+  }
+  .s2 {
+    right: 3%;
+    top: 2%;
+  }
+  .s3 {
+    right: 5%;
+    top: 50%;
+  }
+}
+
+@container (max-width: 600px) {
+  .title {
+    flex-direction: column;
+    gap: 0;
+  }
+  .s1 {
+    width: 24%;
+  }
+  .s2 {
+    width: 25%;
+  }
+  .s3 {
+    width: 21%;
+  }
+}
+
+@container (max-width: 480px) {
+  .btns {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn {
+    width: 100%;
+  }
+  .item {
+    padding: 0 18px;
+  }
+}

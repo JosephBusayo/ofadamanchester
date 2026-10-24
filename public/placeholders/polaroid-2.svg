@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000">
+<rect width="1000" height="1000" fill="#5A2E14"/>
+<text x="50%" y="500" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="90" fill="#F9F1E3">POLAROID 2</text>
+<text x="50%" y="590" text-anchor="middle" font-family="monospace" font-size="34" fill="#F9F1E3" opacity=".75">PLACEHOLDER · Square photo · 1000×1000</text>
+</svg>
