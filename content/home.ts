@@ -9,9 +9,9 @@ export const hero = {
   primary: { label: "ORDER NOW", href: "/menu" },
   secondary: { label: "VIEW MENU", href: "/menu" },
   image: {
-    // The open box centred on a transparent canvas; swap for a background-free cut-out when ready.
-    src: "/images/hero-ofada-box.webp",
-    alt: "The Ofada Box: Ofada rice in leaf, classic sauce with a boiled egg, peppered beef and fried plantain",
+    // Background-free cut-out centred on a wide transparent canvas (food fills the height).
+    src: "/images/hero-ofada-bowl.webp",
+    alt: "Ofada rice on a leaf beside an Ofada Manchester bowl of classic sauce with assorted meat and a boiled egg",
     width: 2400,
     height: 902,
   },
@@ -42,6 +42,7 @@ export const receipt = {
   title: "MADE TO BE *SHARED*",
   photos: [
     { src: "/images/polaroid-ofada-box.jpg", caption: "first bite, best bite", alt: "An open Ofada Box with rice, sauce and plantain" },
+    { src: "/images/polaroid-ofada-plate.jpg", caption: "moimoi saturdays", alt: "Ofada rice with moimoi and classic sauce with assorted meat and a boiled egg" },
     { src: "/images/polaroid-founder.jpg", caption: "the ofada girl", alt: "Bolade, founder of Ofada Manchester" },
     { src: "/images/polaroid-sauce.jpg", caption: "extra sauce pls", alt: "A bowl of classic Ofada sauce" },
     { src: "/images/polaroid-box-closed.jpg", caption: "just hands", alt: "An Ofada Box: no forks, no knives, just hands" },
