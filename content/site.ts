@@ -56,11 +56,4 @@ export const footer = {
       { label: "WHATSAPP", href: site.whatsapp.href },
     ],
   },
-  newsletter: {
-    title: "JOIN THE OFADA FAMILY",
-    body: "Get new dishes, Saturday specials and more.",
-    placeholder: "Your mail",
-    // Newsletter is v2 — the form is shown to match the design but doesn't send yet.
-    pendingMessage: "Coming soon — follow us on Instagram for now.",
-  },
 } as const;

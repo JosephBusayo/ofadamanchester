@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { footer, legalLinks, site } from "@/content/site";
 import { LOGO } from "./Logo";
-import { NewsletterForm } from "./NewsletterForm";
 
 const headingClass = "text-lg font-semibold leading-[1.1] tablet:text-[22px]";
 const linkClass =
@@ -11,7 +10,7 @@ const linkClass =
 export function Footer() {
   return (
     <footer className="bg-bg px-5 pb-6 pt-14 text-ink tablet:px-8 tablet:pt-[72px] desktop:px-12 desktop:pt-24">
-      <div className="grid grid-cols-2 gap-x-5 gap-y-9 tablet:grid-cols-3 tablet:gap-x-8 tablet:gap-y-10 desktop:grid-cols-[340px_200px_200px_1fr_260px]">
+      <div className="grid grid-cols-2 gap-x-5 gap-y-9 tablet:grid-cols-3 tablet:gap-x-8 tablet:gap-y-10 desktop:grid-cols-[340px_200px_200px_1fr]">
         {/* Address */}
         <div className="col-span-2 flex gap-3.5 tablet:col-span-3 tablet:gap-5 desktop:col-span-1">
           <svg
@@ -41,15 +40,6 @@ export function Footer() {
 
         <FooterLinks title={footer.quickLinks.title} links={footer.quickLinks.links} />
         <FooterLinks title={footer.social.title} links={footer.social.links} external />
-
-        {/* Newsletter (desktop: last column, leaving the 4th column empty as in Framer) */}
-        <div className="col-span-2 tablet:col-span-3 tablet:max-w-[420px] desktop:col-span-1 desktop:col-start-5">
-          <h3 className={headingClass}>{footer.newsletter.title}</h3>
-          <p className="mt-1 text-[17px] leading-[22px] tablet:mt-[15px] tablet:text-xl tablet:leading-[26px]">
-            {footer.newsletter.body}
-          </p>
-          <NewsletterForm />
-        </div>
       </div>
 
       <FooterWordmark />

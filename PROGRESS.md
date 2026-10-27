@@ -37,6 +37,12 @@ Build order lives in `CLAUDE.md`. Phases **1–8 are done**. Phase **9** (securi
 - Twilio WhatsApp to owner (template SID or free-text sandbox); each channel fails independently
 - Dev previews at `/dev/emails/customer|owner|owner-warning|whatsapp` (blocked in production)
 
+**Security headers** (27 Oct)
+- CSP, HSTS (prod), X-Frame-Options DENY, nosniff, Referrer-Policy, Permissions-Policy, COOP, no `X-Powered-By` — in `next.config.ts`
+- After deploying, check the browser console on home, menu, checkout and /admin for CSP errors
+
+**Removed** (client decision, 27 Oct): footer newsletter form; food hygiene badge (never built, dropped from spec)
+
 **Admin**
 - Supabase Auth + TOTP 2FA + `ADMIN_EMAIL` allow-list + RLS `is_admin()`
 - Orders by day/status (30s refresh), status flow, order detail, resend confirmation, Stripe link
@@ -57,7 +63,6 @@ Build order lives in `CLAUDE.md`. Phases **1–8 are done**. Phase **9** (securi
 8. Note: `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` isn't used by the code (hosted Checkout) — harmless to set.
 
 ### Phase 9 — security / QA
-- **Security headers are NOT implemented yet** — add CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy in `next.config.ts` `headers()`. CSP must allow Stripe redirect, Supabase, and the image/font origins.
 - Set `UPSTASH_REDIS_REST_URL/TOKEN` in Vercel — without them rate limits are per-instance memory only.
 - Mobile QA at 360px, Lighthouse pass.
 

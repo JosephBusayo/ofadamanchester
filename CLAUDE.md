@@ -128,7 +128,7 @@ Extra font: **Anton** 400 for the receipt "PAID" stamp (as in Framer).
 | Polaroid photo stack ("click for more ↻") | Customer / food photos with handwritten captions |
 | Receipt animation ("GOOD FOOD ✓ … PAID") | Keep — swap to Ofada name, Manchester address, "A TASTE OF HOME" |
 | OUR BESTSELLERS (4 cards, "#1", "HOT" badges) | Ofada Box (#1), Regular Pack, Large Pack, Sauce 1L (HOT) — all with **Add to cart** |
-| Footer (address, quick links, social, newsletter) | Manchester details, WhatsApp, Instagram; newsletter optional (v2) |
+| Footer (address, quick links, social, newsletter) | Manchester details, WhatsApp, Instagram. **Newsletter removed** (client decision) |
 | "ORDER GRIDDLE" modal (Uber Eats / DoorDash links) | **Replace** with our own cart drawer + checkout |
 
 ---
@@ -264,7 +264,8 @@ the server** using the service-role key. Only the owner's user can read/update o
 - Zod validation on all inputs (UK postcode, UK phone `+44`, email, qty 1–20, notes ≤ 300 chars).
 - Rate limit checkout + delivery-quote endpoints (e.g. 10 requests / 10 min per IP).
 - Supabase RLS on every table; service-role key used only in server code.
-- Security headers (CSP, HSTS, X-Frame-Options) via `next.config`.
+- Security headers (CSP, HSTS, X-Frame-Options) via `next.config`. **Done** — `headers()` in `next.config.ts`.
+  If you add a third-party script, image host or iframe, add its origin to the CSP there.
 - Escape all user text in emails/admin; no `dangerouslySetInnerHTML`.
 
 ---
@@ -310,7 +311,7 @@ Commit a `.env.example` with these names and no values.
 - Privacy policy (UK GDPR), Terms & refund/cancellation policy, cookie notice
   (only essential cookies in v1 → no consent banner needed).
 - Business name and contact details in footer.
-- Food hygiene rating badge (if the client wants to show it).
+- No food hygiene rating badge (client decision).
 
 ---
 
