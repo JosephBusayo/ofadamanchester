@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { Footer } from "@/components/Footer";
 import { Header, HeaderWithPathname } from "@/components/Header";
+import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { CartProvider } from "@/lib/cart";
 import { getMenu } from "@/lib/menu/get-menu";
 
@@ -16,6 +17,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
       </Suspense>
       <main className="flex-1">{children}</main>
       <Footer />
+      <WhatsAppButton />
       <CartDrawer menu={menu} />
     </CartProvider>
   );

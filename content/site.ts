@@ -22,6 +22,12 @@ export const site = {
   legalUpdated: "23 October 2026",
 } as const;
 
+/** Floating chat button on every shop page. */
+export const whatsappButton = {
+  label: "Chat with us on WhatsApp",
+  message: "Hi Ofada Manchester! ",
+} as const;
+
 export const legalLinks = [
   { label: "Privacy", href: "/privacy" },
   { label: "Terms", href: "/terms" },
