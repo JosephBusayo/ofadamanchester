@@ -133,7 +133,7 @@ export function Hero() {
                 height={hero.image.height}
                 priority
                 unoptimized={hero.image.src.endsWith(".svg")}
-                sizes="(min-width: 810px) 90vw, 100vw"
+                sizes="100vw"
               />
             </div>
             <Sticker className={styles.s1} depth={38}>

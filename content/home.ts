@@ -9,8 +9,9 @@ export const hero = {
   primary: { label: "ORDER NOW", href: "/menu" },
   secondary: { label: "VIEW MENU", href: "/menu" },
   image: {
-    src: "/placeholders/hero.svg",
-    alt: "The Ofada Box: Ofada rice wrapped in leaf, classic sauce, boiled egg, proteins and fried plantain",
+    // The open box centred on a transparent canvas; swap for a background-free cut-out when ready.
+    src: "/images/hero-ofada-box.webp",
+    alt: "The Ofada Box: Ofada rice in leaf, classic sauce with a boiled egg, peppered beef and fried plantain",
     width: 2400,
     height: 902,
   },
@@ -40,9 +41,11 @@ export const manifesto = {
 export const receipt = {
   title: "MADE TO BE *SHARED*",
   photos: [
-    { src: "/placeholders/polaroid-1.svg", caption: "first bite, best bite", alt: "Ofada rice and sauce being shared" },
-    { src: "/placeholders/polaroid-2.svg", caption: "sunday with the family", alt: "Family sharing Ofada boxes at the table" },
-    { src: "/placeholders/polaroid-3.svg", caption: "extra sauce pls", alt: "Close-up of the classic Ofada sauce" },
+    { src: "/images/polaroid-ofada-box.jpg", caption: "first bite, best bite", alt: "An open Ofada Box with rice, sauce and plantain" },
+    { src: "/images/polaroid-founder.jpg", caption: "the ofada girl", alt: "Bolade, founder of Ofada Manchester" },
+    { src: "/images/polaroid-sauce.jpg", caption: "extra sauce pls", alt: "A bowl of classic Ofada sauce" },
+    { src: "/images/polaroid-box-closed.jpg", caption: "just hands", alt: "An Ofada Box: no forks, no knives, just hands" },
+    { src: "/images/polaroid-bag.jpg", caption: "made for you", alt: "An Ofada Manchester takeaway bag" },
   ],
   hint: "click for more ↻",
   storeName: "OFADA",
@@ -72,6 +75,6 @@ export const bestsellers = {
 };
 
 export const storyMenuCards = [
-  { title: "OUR STORY", href: "/our-story", image: "/placeholders/card-our-story.svg", alt: "The Ofada Manchester kitchen" },
-  { title: "MENU", href: "/menu", image: "/placeholders/card-menu.svg", alt: "Ofada rice with classic sauce and plantain" },
+  { title: "OUR STORY", href: "/our-story", image: "/images/card-our-story-founder.jpg", alt: "Bolade, founder of Ofada Manchester" },
+  { title: "MENU", href: "/menu", image: "/images/card-menu-ofada-box.jpg", alt: "An open Ofada Box with rice, sauce and plantain" },
 ];

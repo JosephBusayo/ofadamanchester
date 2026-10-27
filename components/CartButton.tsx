@@ -1,9 +1,17 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { useCart } from "@/lib/cart";
 
+const noopSubscribe = () => () => {};
+
 export function CartButton({ className = "" }: { className?: string }) {
-  const { count, open } = useCart();
+  const cart = useCart();
+  // The header hydrates inside a Suspense boundary, possibly after the cart has loaded from
+  // storage. Render the server's empty state during hydration so the HTML matches.
+  const hydrating = useSyncExternalStore(noopSubscribe, () => false, () => true);
+  const count = hydrating ? 0 : cart.count;
+  const { open } = cart;
 
   return (
     <button

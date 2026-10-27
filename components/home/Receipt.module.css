@@ -85,6 +85,12 @@
   z-index: 1;
   transform: rotate(-8deg) translate(-5%, 3%);
 }
+/* Photos beyond the first three wait hidden behind the stack. */
+.pol:not([data-pos="0"], [data-pos="1"], [data-pos="2"]) {
+  z-index: 0;
+  opacity: 0;
+  transform: rotate(-8deg) translate(-5%, 3%);
+}
 .pol.isLeaving {
   transform: rotate(-14deg) translate(-70%, -8%) !important;
   z-index: 4;

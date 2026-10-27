@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import styles from "@/components/admin/Admin.module.css";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { SettingsForm } from "@/components/admin/SettingsForm";
+import { TestNotifications } from "@/components/admin/TestNotifications";
 import { requireAdmin } from "@/lib/admin/auth";
 import { DEFAULT_SETTINGS } from "@/lib/settings";
 import type { OpeningHours } from "@/lib/schedule";
@@ -36,7 +37,9 @@ async function Settings() {
   ) as Record<"0" | "1" | "2" | "3" | "4" | "5" | "6", { open: string; close: string }[]>;
 
   return (
-    <SettingsForm
+    <div className={styles.stack}>
+      <TestNotifications />
+      <SettingsForm
       initial={{
         ordersPaused: data.orders_paused,
         openingHours,
@@ -48,6 +51,7 @@ async function Settings() {
         minOrderDeliveryPence: data.min_order_delivery_pence,
         pickupAddress: data.pickup_address || "",
       }}
-    />
+      />
+    </div>
   );
 }

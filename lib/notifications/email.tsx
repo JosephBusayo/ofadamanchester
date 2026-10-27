@@ -40,7 +40,7 @@ export function sendCustomerConfirmation(order: OrderRecord, pickupAddress: stri
   );
 }
 
-export function sendOwnerNewOrder(order: OrderRecord, adminUrl: string, warning?: string) {
+export function sendOwnerNewOrder(order: OrderRecord, adminUrl: string, warning?: string, resendId?: string) {
   const to = process.env.OWNER_EMAIL;
   if (!to) return Promise.resolve("skipped" as const);
   return send(
@@ -50,6 +50,6 @@ export function sendOwnerNewOrder(order: OrderRecord, adminUrl: string, warning?
       react: <OwnerNewOrder order={order} adminUrl={adminUrl} warning={warning} />,
       replyTo: order.email,
     },
-    `order-${order.id}-owner`,
+    `order-${order.id}-owner${resendId ? `-resend-${resendId}` : ""}`,
   );
 }

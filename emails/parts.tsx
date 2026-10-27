@@ -1,8 +1,11 @@
-import { Body, Column, Container, Head, Hr, Html, Preview, Row, Section, Text } from "@react-email/components";
+import { Body, Column, Container, Head, Hr, Html, Img, Preview, Row, Section, Text } from "@react-email/components";
 import { itemDetails } from "@/lib/notifications/format";
 import type { OrderRecord } from "@/lib/notifications/order-types";
 import { formatPence } from "@/lib/pricing";
 import { email } from "./theme";
+
+// Email images need an absolute URL: the deployed site serves /brand/logo-cream.png.
+const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://ofadamanchester.com").replace(/\/$/, "");
 
 export function EmailShell({ preview, children }: { preview: string; children: React.ReactNode }) {
   return (
@@ -17,10 +20,13 @@ export function EmailShell({ preview, children }: { preview: string; children: R
       <Body style={{ margin: 0, padding: "24px 0", backgroundColor: email.bg, fontFamily: email.font, color: email.ink }}>
         <Container style={{ maxWidth: 560, margin: "0 auto", padding: "0 16px" }}>
           <Section style={{ backgroundColor: email.primary, borderRadius: "24px 24px 0 0", padding: "22px 28px" }}>
-            {/* TODO(client): swap for the logo image once supplied */}
-            <Text style={{ margin: 0, fontFamily: email.heading, fontSize: 30, lineHeight: "30px", color: email.onPrimary, letterSpacing: "-0.5px" }}>
-              OFADA
-            </Text>
+            <Img
+              src={`${SITE_URL}/brand/logo-cream.png`}
+              width={150}
+              height={49}
+              alt="Ofada Manchester"
+              style={{ display: "block", fontFamily: email.heading, fontSize: 24, color: email.onPrimary }}
+            />
           </Section>
           <Section
             style={{

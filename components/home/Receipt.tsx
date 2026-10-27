@@ -14,7 +14,7 @@ export function Receipt() {
   const receiptRef = useRef<HTMLDivElement>(null);
   const [printed, setPrinted] = useState(0); // 0 → 1 as the receipt "prints"
   const [receiptHeight, setReceiptHeight] = useState(0);
-  const [order, setOrder] = useState([0, 1, 2]); // photo indices, front first
+  const [order, setOrder] = useState(() => receipt.photos.map((_, i) => i)); // photo indices, front first
   const [leaving, setLeaving] = useState<number | null>(null);
   const [now, setNow] = useState<Date | null>(null);
 

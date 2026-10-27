@@ -1,5 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import { footer, legalLinks, site } from "@/content/site";
+import { LOGO } from "./Logo";
 import { NewsletterForm } from "./NewsletterForm";
 
 const headingClass = "text-lg font-semibold leading-[1.1] tablet:text-[22px]";
@@ -104,23 +106,11 @@ function FooterLinks({
   );
 }
 
-// Giant full-width wordmark at the bottom of the footer. Text stretched to the
-// container width via SVG textLength — swap for the client's logo SVG later.
+// Giant full-width logo at the bottom of the footer (Framer: full-width wordmark).
 function FooterWordmark() {
   return (
     <div className="mt-11 tablet:mt-14 desktop:mt-[73px]" aria-hidden>
-      <svg viewBox="0 0 1000 214" className="block h-auto w-full text-primary">
-        <text
-          x="0"
-          y="207"
-          textLength="1000"
-          lengthAdjust="spacingAndGlyphs"
-          fill="currentColor"
-          style={{ fontFamily: "var(--font-bowlby)", fontSize: 286 }}
-        >
-          {site.wordmark}
-        </text>
-      </svg>
+      <Image src={LOGO.src} alt="" width={LOGO.width} height={LOGO.height} sizes="100vw" className="block h-auto w-full" />
     </div>
   );
 }

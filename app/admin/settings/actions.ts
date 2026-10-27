@@ -4,6 +4,9 @@ import { updateTag } from "next/cache";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin/auth";
 import { MENU_CACHE_TAG } from "@/lib/menu/get-menu";
+import { notifyNewOrder, type ChannelResult } from "@/lib/notifications/notify";
+import { sampleOrder } from "@/lib/notifications/sample-order";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { SETTINGS_CACHE_TAG } from "@/lib/settings";
 
 export type SaveResult = { ok: boolean; message: string };
@@ -60,6 +63,26 @@ export async function setOrdersPausedAction(paused: boolean): Promise<SaveResult
   if (error) return { ok: false, message: `Couldn't update: ${error.message}` };
   updateTag(SETTINGS_CACHE_TAG);
   return { ok: true, message: paused ? "Online orders paused." : "Online orders are open." };
+}
+
+/**
+ * Sends a sample order through the real email + WhatsApp setup so the owner can check
+ * alerts work without a real payment. The "customer" email goes to the signed-in admin.
+ */
+export async function sendTestNotificationsAction(): Promise<{ results: ChannelResult[] } | { error: string }> {
+  const { email } = await requireAdmin();
+  if (!(await checkRateLimit("quote"))) return { error: "Too many tests — wait a few minutes." };
+  const stamp = String(Date.now());
+  const order = {
+    ...sampleOrder,
+    id: crypto.randomUUID(),
+    number: 9999,
+    customerName: "Test Order",
+    email,
+    notes: "TEST — this is a test notification from the admin settings page. No real order was placed.",
+  };
+  const results = await notifyNewOrder(order, { idempotencySuffix: stamp });
+  return { results };
 }
 
 const productToggle = z.object({

@@ -55,7 +55,7 @@ export function Header({ pathname }: { pathname: string }) {
           ))}
         </nav>
 
-        <Logo className="text-[46px]" />
+        <Logo className="h-[58px]" priority />
 
         <div className="flex items-center justify-end gap-3">
           <CartButton />
@@ -63,9 +63,9 @@ export function Header({ pathname }: { pathname: string }) {
         </div>
       </div>
 
-      {/* Phone: logo | cart + burger */}
+      {/* Phone: logo | cart + menu */}
       <div className="flex h-24 items-center justify-between px-3.5 tablet:hidden">
-        <Logo className="text-[25px]" />
+        <Logo className="h-11" priority />
         <div className="flex items-center gap-2">
           <CartButton />
           <button
@@ -76,7 +76,7 @@ export function Header({ pathname }: { pathname: string }) {
             aria-controls="mobile-menu"
             className="flex size-12 items-center justify-center"
           >
-            <BurgerIcon />
+            <MenuIcon />
           </button>
         </div>
       </div>
@@ -126,7 +126,7 @@ function MobileMenu({
         }`}
       >
         <div className="flex h-14 items-center justify-between">
-          <Logo className="text-[29px]" />
+          <Logo className="h-11" />
           <button
             type="button"
             onClick={onClose}
@@ -160,16 +160,10 @@ function MobileMenu({
   );
 }
 
-// Framer uses a little burger illustration as the menu icon — drawn in brand colours.
-function BurgerIcon() {
+function MenuIcon() {
   return (
-    <svg width="34" height="30" viewBox="0 0 34 30" aria-hidden>
-      <path d="M4 12C4 6 10 2 17 2s13 4 13 10H4Z" fill="var(--accent)" stroke="var(--primary)" strokeWidth="1.5" />
-      <circle cx="12" cy="7" r="1" fill="var(--primary)" />
-      <circle cx="17" cy="5.5" r="1" fill="var(--primary)" />
-      <circle cx="22" cy="7" r="1" fill="var(--primary)" />
-      <rect x="2" y="14" width="30" height="5" rx="2.5" fill="var(--primary)" />
-      <path d="M4 21h26v2a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5v-2Z" fill="var(--accent)" stroke="var(--primary)" strokeWidth="1.5" />
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path d="M3 6h18M3 12h18M3 18h18" stroke="var(--ink)" strokeWidth="2.6" strokeLinecap="round" />
     </svg>
   );
 }

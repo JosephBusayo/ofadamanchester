@@ -1,15 +1,14 @@
-// Our Story copy. TODO(client): every paragraph here is placeholder wording in the
-// shop's voice — the owner should rewrite it with the real story (who, when, why).
+// Our Story copy, in the founder's own words (from Bolade's story video captions).
 import type { ManifestoContent } from "@/components/home/Manifesto";
 
 export const storyBanner = {
   title: "OUR STORY",
-  image: { src: "/placeholders/story-banner.svg", alt: "Ofada rice wrapped in leaf, ready to serve" },
+  image: { src: "/images/story-banner-ofada-box.jpg", alt: "Ofada rice and fried plantain in an Ofada Box" },
 };
 
 export const storyManifesto: ManifestoContent = {
   quote:
-    "“We started Ofada Manchester with one simple idea — cook the food we grew up on, the way it’s meant to be made, and share it with Manchester.\n\nWhat matters most is the rice, the sauce and the care — not shortcuts.”",
+    "“I didn’t start as a chef. I started as a girl who missed the flavours of home.\n\nOfada Manchester is not just a food brand, but a bridge between home and here.”",
   badges: [
     { label: "OFADA", tone: "primary" },
     { label: "SAUCED", tone: "accent" },
@@ -28,40 +27,43 @@ export type StoryChapter = {
 
 export const storyChapters: StoryChapter[] = [
   {
-    title: "A TASTE\nOF HOME\nIN MANCHESTER",
+    title: "HI, I’M\nBOLADE",
     paragraphs: [
-      "Ofada Manchester began in a home kitchen, cooking Ofada rice and sauce for friends and family who missed the taste of home. Word spread, the orders grew, and the idea stayed the same: a short menu, done properly, made fresh.",
+      "I’m the founder of Ofada Manchester — this is more than just a business, it’s my story.",
+      "When I moved to the UK, I deeply missed the taste of home. I couldn’t find authentic Ofada sauce the way we enjoy it back in Nigeria: rich, smoky and deeply flavoured.",
     ],
     layout: "a",
-    images: [{ src: "/placeholders/story-1.svg", alt: "Ofada rice wrapped in leaf" }],
+    images: [{ src: "/images/story-rice-wrap.jpg", alt: "Ofada rice wrapped in leaf" }],
   },
   {
-    title: "THE MENU",
+    title: "THE DAY\nEVERYTHING\nCHANGED",
     paragraphs: [
-      "Every pack starts with Ofada rice, wrapped in leaf the traditional way, and our classic sauce — slow-cooked with peppers and assorted, rich and properly spicy. Every meal comes with a boiled egg.",
-      "On the side: fried plantain, extra proteins and MoiMoi on Saturdays. A few things, made well — everything you need, nothing you don’t.",
-      "Want it at home? Take the sauce home by the litre.",
+      "One day, I cooked it for my sister-in-law’s baby’s first birthday, and everything changed.",
+      "I wasn’t prepared for what happened next. Everyone who tasted it lit up. Some asked for more, others quietly wiped their plates clean.",
+      "They all said the same thing: “This tastes like home.”",
     ],
     layout: "b",
     images: [
-      { src: "/placeholders/story-2a.svg", alt: "Fried plantain" },
-      { src: "/placeholders/story-2b.svg", alt: "The Ofada Box" },
+      { src: "/images/story-founder.jpg", alt: "Bolade, founder of Ofada Manchester, holding a stack of Ofada bowls" },
+      { src: "/images/story-box-closed.jpg", alt: "An Ofada Box: no forks, no knives, just hands" },
     ],
   },
   {
-    title: "THE SAUCE",
+    title: "WHY NOT\nSHARE IT?",
     paragraphs: [
-      "Our classic Ofada sauce is the heart of everything we cook. It takes time, patience and a lot of peppers — and it’s exactly how we were taught to make it.",
+      "That moment sparked something in me. If one meal could take people back home, even just for a moment, why not share that with others?",
+      "So I decided to share that feeling with others, and that’s how Ofada Manchester was born.",
     ],
     layout: "c",
-    images: [{ src: "/placeholders/story-3.svg", alt: "Classic Ofada sauce" }],
+    images: [{ src: "/images/story-sauce-tray.jpg", alt: "Classic Ofada sauce with assorted meat and a boiled egg" }],
   },
   {
-    title: "THE KITCHEN",
+    title: "THE OFADA GIRL",
     paragraphs: [
-      "We cook every order fresh in Manchester, for pickup or delivery. Good food comes from people who care about it — and you can taste it in every wrap.",
+      "Today, I’m building something beautiful from that craving: delivering real Nigerian meals to those who miss them the most.",
+      "So yes, I’m the Ofada Girl, serving you a taste of home, delivered freshly, right here in Manchester.",
     ],
     layout: "d",
-    images: [{ src: "/placeholders/story-4.svg", alt: "Cooking in the Ofada kitchen" }],
+    images: [{ src: "/images/story-plantain.jpg", alt: "Fried plantain" }],
   },
 ];

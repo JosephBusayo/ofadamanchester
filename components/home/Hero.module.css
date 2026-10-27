@@ -14,7 +14,6 @@
   /* Title metrics (League Gothic) */
   --tlh: 0.84;
   --ttop: max(8px, min(96px, 6.667cqw));
-  --artw: 90%;
   --overlap-pct: 0.34; /* how far the image rises into the headline */
 }
 
@@ -136,13 +135,12 @@
   color: var(--bg);
 }
 
+/* Full-bleed and centred under the headline (Framer: image spans the section width). */
 .art {
   position: relative;
   z-index: 2;
-  width: var(--artw);
-  align-self: flex-end;
-  margin-right: -32px;
-  margin-top: var(--overlap, 0px);
+  align-self: stretch;
+  margin: var(--overlap, 0px) -32px 0;
 }
 .layer {
   will-change: transform;
@@ -348,6 +346,13 @@
   .art {
     order: -1;
     margin: 0 -20px 4px;
+  }
+  /* The hero art is a square box centred on a wide transparent canvas: enlarge it so
+     the box reads at phone width (the empty sides are clipped by .hs). */
+  .art .image {
+    width: 190%;
+    max-width: none;
+    margin-left: -45%;
   }
   .title {
     order: 0;
