@@ -248,10 +248,10 @@ The owner isn't on Uber Eats/Direct, so no courier API. Instead:
   `/admin/settings`. Customer postcode → district (`M14 5RG` → `M14`). Not on the list →
   "message us on WhatsApp" with a link to the business WhatsApp **+44 7932 541874** (`site.whatsapp`, used site-wide).
 - **Price per area**: a fixed price, or (if empty) automatic from distance — **£4.50 (the minimum)
-  covers the first 3 km, then £1.00 per extra km**, rounded up to 50p (all editable).
-- **Long-distance discount**: 5% off the delivery price only beyond `delivery_far_km` (default 8 km),
-  never below £4.50, shown as its own line. No discount anywhere else (client decision). Distance = kitchen
+  covers the first 3 km, then £1.00 per extra km**, rounded up to 50p (all editable). Distance = kitchen
   (`KITCHEN_POSTCODE`) → customer postcode via postcodes.io, haversine × 1.3.
+- **Long-distance discount**: 5% off the delivery price only beyond `delivery_far_km` (default 8 km),
+  never below £4.50, shown as its own line. No discount anywhere else (client decision).
 - **Surcharges** (0 = off): evening from `night_from` (default 19:00, +£1) and rain (+£1) when the
   Open-Meteo forecast (free, no key) shows ≥ 0.5 mm/h at the delivery slot. Weather failure = no charge.
 - **Pause delivery only** toggle + customer message (bad weather, no driver); pickup still works.
