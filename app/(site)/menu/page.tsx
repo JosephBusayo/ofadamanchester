@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { MenuFilter } from "@/components/menu/MenuFilter";
 import { ProductCard } from "@/components/ProductCard";
-import { menuPage } from "@/content/menu";
+import { bulkOrders, menuPage, productGalleries } from "@/content/menu";
+import { site } from "@/content/site";
 import { MENU_SCROLL_OFFSET } from "@/lib/menu/constants";
 import { getMenu } from "@/lib/menu/get-menu";
 import { formatPence, fromPrice } from "@/lib/pricing";
@@ -48,7 +49,10 @@ export default async function MenuPage() {
 
       <div className="pointer-events-none sticky top-20 z-10 mt-10">
         <MenuFilter
-          items={categories.map((c) => ({ slug: c.slug, label: menuPage.filterLabels[c.slug] ?? c.name }))}
+          items={[
+            ...categories.map((c) => ({ slug: c.slug, label: menuPage.filterLabels[c.slug] ?? c.name })),
+            { slug: bulkOrders.slug, label: menuPage.filterLabels[bulkOrders.slug] ?? bulkOrders.title },
+          ]}
         />
       </div>
 
@@ -71,6 +75,7 @@ export default async function MenuPage() {
                     name={p.name}
                     price={`${price.isFrom ? "From " : ""}${formatPence(price.pence)}`}
                     image={p.image}
+                    gallery={productGalleries[p.slug]}
                     badge={p.badge}
                     soldOut={p.soldOut}
                   />
@@ -79,6 +84,29 @@ export default async function MenuPage() {
             </div>
           </section>
         ))}
+
+        {/* Bulk / party orders: arranged on WhatsApp, not through the cart. */}
+        <section id={bulkOrders.slug} className="flex flex-col gap-6" style={{ scrollMarginTop: MENU_SCROLL_OFFSET }}>
+          <h2 className="font-wordmark text-[32px] leading-8 tracking-[-0.96px] text-ink">{bulkOrders.title}</h2>
+          <div className="grid grid-cols-1 gap-4 tablet:grid-cols-2">
+            {bulkOrders.images.map((img) => (
+              <div key={img.src} className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-bg-alt">
+                <Image src={img.src} alt={img.alt} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-col items-start gap-5 rounded-2xl bg-bg-alt p-6 tablet:flex-row tablet:items-center tablet:justify-between tablet:p-8">
+            <p className="max-w-[640px] text-lg leading-relaxed text-ink">{bulkOrders.body}</p>
+            <a
+              href={`${site.whatsapp.href}?text=${encodeURIComponent(bulkOrders.whatsappMessage)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-[52px] shrink-0 items-center rounded-full bg-primary px-[26px] text-[17px] font-semibold leading-none text-on-primary transition-colors hover:bg-primary-light"
+            >
+              {bulkOrders.cta}
+            </a>
+          </div>
+        </section>
       </div>
     </>
   );

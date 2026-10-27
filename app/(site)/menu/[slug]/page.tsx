@@ -5,8 +5,9 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import styles from "@/components/menu/ItemDetail.module.css";
 import { OrderPanel } from "@/components/menu/OrderPanel";
+import { ImageCarousel } from "@/components/ImageCarousel";
 import { ProductCard } from "@/components/ProductCard";
-import { itemPage, menuPage } from "@/content/menu";
+import { itemPage, menuPage, productGalleries } from "@/content/menu";
 import { UK_ALLERGENS, allergenNames } from "@/lib/menu/allergens";
 import { getExtras, getMenu, getProduct } from "@/lib/menu/get-menu";
 import { formatPence, fromPrice } from "@/lib/pricing";
@@ -43,6 +44,7 @@ async function Item({ params }: PageProps<"/menu/[slug]">) {
 
   const price = fromPrice(product);
   const image = product.image ?? FALLBACK_IMAGE;
+  const gallery = productGalleries[product.slug];
   const saturdayOnly = product.availableDays?.length === 1 && product.availableDays[0] === 6;
   const related = category.products.filter((p) => p.slug !== product.slug);
   const alsoLike = (related.length ? related : menu.categories.flatMap((c) => c.products))
@@ -72,14 +74,18 @@ async function Item({ params }: PageProps<"/menu/[slug]">) {
 
         <div className={styles.band}>
           <div className={styles.bandImage}>
-            <Image
-              src={image}
-              alt={product.name}
-              fill
-              priority
-              sizes="(min-width: 700px) 560px, 80vw"
-              unoptimized={image.endsWith(".svg")}
-            />
+            {gallery && gallery.length > 1 ? (
+              <ImageCarousel images={gallery} sizes="(min-width: 700px) 560px, 80vw" fit="contain" priority interactive />
+            ) : (
+              <Image
+                src={image}
+                alt={product.name}
+                fill
+                priority
+                sizes="(min-width: 700px) 560px, 80vw"
+                unoptimized={image.endsWith(".svg")}
+              />
+            )}
           </div>
         </div>
 
@@ -138,6 +144,7 @@ async function Item({ params }: PageProps<"/menu/[slug]">) {
                   name={p.name}
                   price={`${pp.isFrom ? "From " : ""}${formatPence(pp.pence)}`}
                   image={p.image}
+                  gallery={productGalleries[p.slug]}
                   badge={p.badge}
                   soldOut={p.soldOut}
                 />

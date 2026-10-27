@@ -16,7 +16,32 @@ export const menuPage = {
     sauce: "SAUCE",
     "protein-add-ons": "ADD-ONS",
     sides: "SIDES",
+    "bulk-orders": "BULK",
   } as Record<string, string>,
+};
+
+/**
+ * Products shown as an auto-playing photo carousel (every 3 s) instead of one photo.
+ * Keyed by product slug; other products keep their single image from the menu.
+ */
+export const productGalleries: Record<string, { src: string; alt: string }[]> = {
+  "ofada-box": [
+    { src: "/images/story-box-closed.jpg", alt: "The Ofada Box, closed: no forks, no knives, just hands" },
+    { src: "/images/product-ofada-box.jpg", alt: "The Ofada Box, open: Ofada rice, classic sauce with egg, peppered protein and fried plantain" },
+  ],
+};
+
+/** Bulk / party orders — handled on WhatsApp, shown at the end of the menu page. */
+export const bulkOrders = {
+  slug: "bulk-orders",
+  title: "BULK ORDERS",
+  body: "Feeding a crowd? Parties, owambes, church and office events — we wrap Ofada rice by the dozen and cook the sauce in bulk. Message us on WhatsApp with your date and numbers and we'll put a quote together.",
+  images: [
+    { src: "/images/bulk1.jpg", alt: "Dozens of Ofada rice portions wrapped in leaves for a bulk order" },
+    { src: "/images/bulk2.jpg", alt: "Rows of leaf-wrapped Ofada rice topped with sauce and boiled eggs for an event" },
+  ],
+  cta: "ORDER IN BULK ON WHATSAPP",
+  whatsappMessage: "Hi Ofada Manchester! I'd like to place a bulk order. Date: … Number of people: … Pickup or delivery: …",
 };
 
 export const itemPage = {

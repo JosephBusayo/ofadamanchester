@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ProductCard } from "@/components/ProductCard";
+import { productGalleries } from "@/content/menu";
 import { bestsellers } from "@/content/home";
 import { getMenu } from "@/lib/menu/get-menu";
 import { formatPence, fromPrice } from "@/lib/pricing";
@@ -39,6 +40,7 @@ export async function Bestsellers() {
               name={p.name}
               price={`${price.isFrom ? "From " : ""}${formatPence(price.pence)}`}
               image={p.image}
+              gallery={productGalleries[p.slug]}
               badge={p.badge}
               soldOut={p.soldOut}
             />

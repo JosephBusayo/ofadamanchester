@@ -52,6 +52,8 @@ Build order lives in `CLAUDE.md`. Phases **1–8 are done**. Phase **9** (securi
 
 **Pre-order only** (27 Oct): 24 hours' minimum notice, ASAP removed, week ahead bookable, note on menu + checkout. Live DB: run `0005_preorder_24h.sql`.
 
+**Photos & bulk orders** (27 Oct): Ofada Box shows a closed → open photo carousel (3 s, `productGalleries` in `content/menu.ts`; add more products there). New mini/regular/large pack + turkey photos (resized to 1200 px). "Bulk orders" section + BULK pill at the end of the menu → WhatsApp with a prefilled message.
+
 **Admin**
 - Supabase Auth + TOTP 2FA + `ADMIN_EMAIL` allow-list + RLS `is_admin()`
 - Orders by day/status (30s refresh), status flow, order detail, resend confirmation, Stripe link
