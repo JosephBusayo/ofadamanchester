@@ -37,7 +37,7 @@ export const seedMenu: Menu = {
           name: "The Ofada Box",
           pricePence: 2600,
           badge: "#1",
-          image: "/images/product-ofada-box.jpg",
+          image: "/images/product-ofada-box-cutout.webp",
           description:
             "2 wraps of Ofada rice in leaf, our classic sauce, 1 boiled egg, 2 proteins and 6–8 pieces of fried plantain.",
           acceptsExtras: true,
