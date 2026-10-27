@@ -50,6 +50,8 @@ Build order lives in `CLAUDE.md`. Phases **1–8 are done**. Phase **9** (securi
 - Evening (+£1 from 19:00) and rain (+£1, Open-Meteo forecast) surcharges; pause-delivery-only switch
 - **Before merging: run `supabase/migrations/0002_delivery_areas.sql` then `0003_delivery_discount.sql` in the Supabase SQL editor**
 
+**Pre-order only** (27 Oct): 24 hours' minimum notice, ASAP removed, week ahead bookable, note on menu + checkout. Live DB: run `0005_preorder_24h.sql`.
+
 **Admin**
 - Supabase Auth + TOTP 2FA + `ADMIN_EMAIL` allow-list + RLS `is_admin()`
 - Orders by day/status (30s refresh), status flow, order detail, resend confirmation, Stripe link

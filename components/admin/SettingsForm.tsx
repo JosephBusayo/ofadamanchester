@@ -144,16 +144,17 @@ export function SettingsForm({ initial, autoPrices }: { initial: SettingsInput; 
           );
         })}
         <label className={styles.field} style={{ marginTop: 14 }}>
-          <span className={styles.label}>Preparation time (minutes)</span>
+          <span className={styles.label}>Minimum notice for orders (hours)</span>
           <input
             type="number"
             min={0}
-            max={240}
+            max={168}
+            step={1}
             className={`${styles.input} ${styles.inputSmall}`}
-            value={s.leadTimeMinutes}
-            onChange={(e) => update({ leadTimeMinutes: Number(e.target.value) })}
+            value={Math.round(s.leadTimeMinutes / 60)}
+            onChange={(e) => update({ leadTimeMinutes: Math.round(Number(e.target.value) * 60) })}
           />
-          <span className={styles.hint}>The earliest time a customer can pick is now + this.</span>
+          <span className={styles.hint}>All orders are pre-orders: the earliest time a customer can pick is now + this. 24 = order the day before.</span>
         </label>
       </section>
 

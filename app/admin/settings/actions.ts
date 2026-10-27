@@ -20,7 +20,7 @@ const day = z.array(period).max(3);
 const settingsSchema = z.object({
   ordersPaused: z.boolean(),
   openingHours: z.object({ "0": day, "1": day, "2": day, "3": day, "4": day, "5": day, "6": day }),
-  leadTimeMinutes: z.number().int().min(0).max(240),
+  leadTimeMinutes: z.number().int().min(0).max(7 * 24 * 60, "Minimum notice can be at most 7 days."),
   deliveryAreas: z
     .array(
       z.object({

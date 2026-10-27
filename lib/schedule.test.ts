@@ -123,3 +123,31 @@ describe("time slots", () => {
     assert.equal(isValidSlot("2026-10-23T13:10:00.000Z", settings, now), false); // not on the grid
   });
 });
+
+describe("pre-orders (24 hours' notice)", () => {
+  const preorder: ScheduleSettings = { ...settings, leadTimeMinutes: 24 * 60, daysAhead: 8 };
+  // Tue 27 Oct 2026, 14:43 in Manchester (GMT, UTC+0 after the clocks went back).
+  const now = londonToUtc(2026, 10, 27, 14, 43);
+
+  it("never offers a time less than 24 hours away", () => {
+    const days = availableSlots(preorder, now);
+    const first = new Date(days[0].slots[0].iso).getTime();
+    assert.ok(first >= now.getTime() + 24 * 3_600_000, days[0].slots[0].iso);
+    assert.ok(days.every((d) => d.label !== "Today"));
+  });
+
+  it("tomorrow only from the same time of day", () => {
+    const tomorrow = availableSlots(preorder, now)[0];
+    assert.equal(tomorrow.label, "Tomorrow");
+    assert.equal(tomorrow.slots[0].time, "15:00"); // 14:43 + 24h → next slot 15:00
+  });
+
+  it("still offers a full week ahead", () => {
+    const days = availableSlots(preorder, now);
+    assert.equal(days.at(-1)?.date, "2026-11-03"); // today + 7
+  });
+
+  it("a slot under 24 hours away is rejected server-side", () => {
+    assert.equal(isValidSlot(londonToUtc(2026, 10, 28, 14, 0).toISOString(), preorder, now), false);
+  });
+});

@@ -4,6 +4,7 @@
 export const menuPage = {
   eyebrow: "OUR MENU",
   title: "AUTHENTIC. FRESH. DELICIOUS.",
+  preorderNote: (notice: string) => `PRE-ORDER ONLY · ORDER AT LEAST ${notice.toUpperCase()} AHEAD`,
   banner: {
     src: "/images/menu-banner-ofada-plate.jpg",
     alt: "Ofada rice on a leaf with ayamase sauce, a boiled egg and fried plantain",

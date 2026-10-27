@@ -39,9 +39,9 @@ export const DEFAULT_DELIVERY_PAUSED_MESSAGE = "We're not delivering right now �
 export const DEFAULT_SETTINGS: ShopSettings = {
   ordersPaused: false,
   openingHours: DEFAULT_HOURS,
-  leadTimeMinutes: 45,
+  leadTimeMinutes: 24 * 60, // pre-order only: at least 24 hours' notice
   slotMinutes: 30,
-  daysAhead: 7,
+  daysAhead: 8, // today + 7 — with 24h notice that still leaves a week of days to choose
   // TODO(client): starter list — the owner edits it in /admin/settings.
   deliveryAreas: STARTER_DISTRICTS.map((district) => ({ district, feePence: null })),
   deliveryPricing: { basePence: 450, baseKm: 3, perKmPence: 100, farKm: 8, farDiscountPercent: 5 },

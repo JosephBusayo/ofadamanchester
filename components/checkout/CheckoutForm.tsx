@@ -9,7 +9,7 @@ import { useCart } from "@/lib/cart";
 import type { FieldErrors } from "@/lib/checkout-schema";
 import type { Menu } from "@/lib/menu/types";
 import { formatPence, isAvailableOn, orderTotals, priceCart } from "@/lib/pricing";
-import { availableSlots, type SlotDay } from "@/lib/schedule";
+import { availableSlots, noticeLabel, type SlotDay } from "@/lib/schedule";
 import type { PublicSettings } from "@/lib/settings";
 import styles from "./Checkout.module.css";
 
@@ -174,6 +174,7 @@ export function CheckoutForm({
             <h2 id="when-title" className={styles.cardTitle}>
               {copy.whenTitle}
             </h2>
+            <p className={styles.hint}>{copy.preorderNote(noticeLabel(settings.leadTimeMinutes))}</p>
             {days === null ? null : days.length === 0 ? (
               <p className={styles.error}>{copy.noSlots}</p>
             ) : (
@@ -202,9 +203,9 @@ export function CheckoutForm({
                       onChange={(e) => setSlot(e.target.value)}
                       aria-invalid={!!errors.slot}
                     >
-                      {selectedDay.slots.map((s, i) => (
+                      {selectedDay.slots.map((s) => (
                         <option key={s.iso} value={s.iso}>
-                          {i === 0 && selectedDay.label === "Today" ? `${copy.asap} (about ${s.time})` : s.time}
+                          {s.time}
                         </option>
                       ))}
                     </select>

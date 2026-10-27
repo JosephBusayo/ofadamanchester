@@ -6,6 +6,8 @@ import { menuPage } from "@/content/menu";
 import { MENU_SCROLL_OFFSET } from "@/lib/menu/constants";
 import { getMenu } from "@/lib/menu/get-menu";
 import { formatPence, fromPrice } from "@/lib/pricing";
+import { noticeLabel } from "@/lib/schedule";
+import { getSettings } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Menu",
@@ -13,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 export default async function MenuPage() {
-  const menu = await getMenu();
+  const [menu, settings] = await Promise.all([getMenu(), getSettings()]);
   const categories = menu.categories.filter((c) => c.products.length > 0);
 
   return (
@@ -25,6 +27,9 @@ export default async function MenuPage() {
         <h1 className="max-w-[1000px] text-center font-wordmark text-[44px] leading-[0.95] tracking-[-0.04em] text-ink tablet:text-[85px] desktop:text-[88px]">
           {menuPage.title}
         </h1>
+        <p className="rounded-full bg-accent px-5 py-2 text-center text-sm font-bold leading-tight tracking-[1px] text-on-accent tablet:text-base">
+          {menuPage.preorderNote(noticeLabel(settings.leadTimeMinutes))}
+        </p>
       </section>
 
       <div className="mt-10 px-8">

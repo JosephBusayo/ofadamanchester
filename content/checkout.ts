@@ -16,8 +16,8 @@ export const checkoutCopy = {
   deliveryWhatsapp: "WhatsApp",
 
   whenTitle: "WHEN?",
-  asap: "ASAP",
-  noSlots: "No times available in the next week. Please message us on WhatsApp.",
+  preorderNote: (notice: string) => `All orders are pre-orders — please order at least ${notice} ahead.`,
+  noSlots: "No pre-order times available in the next week. Please message us on WhatsApp.",
   saturdayOnlyNote: "Your cart has a Saturday-only item, so only Saturdays are shown.",
   timeLabel: "Time",
 

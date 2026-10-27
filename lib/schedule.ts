@@ -124,6 +124,13 @@ export function londonDayBounds(date: string): { start: Date; end: Date } {
   };
 }
 
+/** Minimum notice as words: 1440 → "24 hours", 30 → "30 minutes". */
+export function noticeLabel(minutes: number): string {
+  if (minutes < 60) return `${minutes} minutes`;
+  const hours = Math.round(minutes / 60);
+  return `${hours} hour${hours === 1 ? "" : "s"}`;
+}
+
 /** "18:30" in Manchester time. */
 export function formatTime(iso: string): string {
   const p = londonParts(new Date(iso));

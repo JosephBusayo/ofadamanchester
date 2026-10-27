@@ -206,8 +206,10 @@ the server** using the service-role key. Only the owner's user can read/update o
    Item detail page/modal for option choice + add-ons + allergens.
 2. **Cart** — slide-out drawer (replaces the Framer "ORDER" modal); persists in
    localStorage; edit qty/options; shows subtotal.
-3. **Pickup or delivery** choice, then **date & time slot** within opening hours
-   (ASAP or scheduled). MoiMoi only selectable when the chosen date is a Saturday.
+3. **Pickup or delivery** choice, then **date & time slot** within opening hours.
+   **Pre-order only (client decision):** at least 24 hours' notice (`lead_time_minutes` = 1440,
+   "Minimum notice" in /admin/settings), no ASAP; customers can book up to a week ahead.
+   Shown on the menu page and at checkout. MoiMoi only selectable when the chosen date is a Saturday.
 4. **Delivery fee by postcode area** (see below). Pickup = £0.
 5. **Checkout** — guest only: name, email, UK mobile, address (delivery only), notes.
    Server recalculates everything, creates the order (`pending`) and a Stripe Checkout Session.
@@ -240,7 +242,7 @@ the server** using the service-role key. Only the owner's user can read/update o
     First sign-in at `/admin/login` shows a QR code to scan with an authenticator app.
   - Admin pages: `/admin` (orders by day + status, auto-refresh 30s), `/admin/orders/[id]`
     (status flow, resend confirmation, Stripe link), `/admin/menu` (sold out / hidden),
-    `/admin/settings` (pause orders, pause delivery, hours, prep time, delivery areas/prices/surcharges, pickup address).
+    `/admin/settings` (pause orders, pause delivery, hours, minimum notice, delivery areas/prices/surcharges, pickup address).
 
 ### Delivery fee — by postcode area (client decision, 27 Oct 2026)
 The owner isn't on Uber Eats/Direct, so no courier API. Instead:
@@ -342,8 +344,8 @@ Commit a `.env.example` with these names and no values.
 ---
 
 ## Open Questions for the Client
-- Kitchen/pickup address & postcode (needed for automatic delivery prices); which postcode areas to deliver to.
-- Opening days/hours, order cut-off, minimum lead time (e.g. 45 min), max orders per slot.
+- Kitchen pickup address (postcode decided: M7 2BA, Salford); final delivery area list.
+- Opening days/hours, max orders per slot. (Notice decided: 24 hours.)
 - VAT registered? (Yes/No)
 - Allergens for every item (sauce, MoiMoi, fried fish, etc.).
 - Domain name and sending email address.
