@@ -1,9 +1,9 @@
 import "server-only";
 
 import { cacheLife } from "next/cache";
-import type { LatLng } from "./delivery";
+import { findPostcode, type LatLng } from "./delivery";
 
-// TODO(client): set KITCHEN_POSTCODE to the real kitchen postcode.
+// KITCHEN_POSTCODE (Vercel env) = the kitchen, e.g. "M7 2BA". Fallback only for local dev.
 const FALLBACK_KITCHEN_POSTCODE = "M1 1AE"; // Manchester city centre
 
 /** Postcode → lat/lng via postcodes.io (free, no key). null if the postcode doesn't exist. */
@@ -35,7 +35,9 @@ export async function lookupDistrict(district: string): Promise<LatLng | null> {
 export async function getKitchenLocation(): Promise<LatLng> {
   "use cache";
   cacheLife("days");
-  const postcode = process.env.KITCHEN_POSTCODE || FALLBACK_KITCHEN_POSTCODE;
+  // Tolerates extra words, e.g. "M72BA Salford Manchester" → "M7 2BA".
+  const raw = process.env.KITCHEN_POSTCODE || FALLBACK_KITCHEN_POSTCODE;
+  const postcode = findPostcode(raw) ?? raw;
   const location = await lookupPostcode(postcode);
   if (!location) throw new Error(`KITCHEN_POSTCODE "${postcode}" wasn't found`);
   return location;

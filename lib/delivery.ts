@@ -130,6 +130,12 @@ export function quoteDelivery(args: {
 // UK postcode, e.g. "M1 1AE", "M14 5RG", "OL1 3EQ". Case/space-insensitive.
 const UK_POSTCODE = /^([A-Z]{1,2}\d[A-Z\d]?) ?(\d[A-Z]{2})$/;
 
+/** Finds a UK postcode inside free text ("M72BA Salford Manchester" → "M7 2BA"), or null. */
+export function findPostcode(text: string): string | null {
+  const m = text.toUpperCase().match(/\b([A-Z]{1,2}\d[A-Z\d]?) ?(\d[A-Z]{2})\b/);
+  return m ? `${m[1]} ${m[2]}` : null;
+}
+
 /** Normalises to "AA9 9AA" form, or returns null if it isn't a valid UK postcode. */
 export function normalisePostcode(input: string): string | null {
   const m = input.trim().toUpperCase().replace(/\s+/g, " ").match(UK_POSTCODE);

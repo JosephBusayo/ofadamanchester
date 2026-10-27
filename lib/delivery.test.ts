@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import {
   distanceFeePence,
   farDiscountPence,
+  findPostcode,
   haversineKm,
   isNight,
   normaliseDistrict,
@@ -165,6 +166,13 @@ describe("districts and night", () => {
 });
 
 describe("UK postcodes", () => {
+  it("finds a postcode inside free text", () => {
+    assert.equal(findPostcode("M72BA Salford Manchester"), "M7 2BA");
+    assert.equal(findPostcode("m7 2ba"), "M7 2BA");
+    assert.equal(findPostcode("Kitchen, 12 High St, Salford M7 2BA, UK"), "M7 2BA");
+    assert.equal(findPostcode("Salford Manchester"), null);
+  });
+
   it("normalises valid postcodes", () => {
     assert.equal(normalisePostcode("m1 1ae"), "M1 1AE");
     assert.equal(normalisePostcode("M145RG"), "M14 5RG");
