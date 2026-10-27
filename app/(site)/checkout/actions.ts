@@ -2,34 +2,38 @@
 
 import { headers } from "next/headers";
 import { checkoutSchema, cartSchema, type CheckoutInput, type FieldErrors } from "@/lib/checkout-schema";
-import { normalisePostcode, quoteDelivery, roadDistanceKm } from "@/lib/delivery";
+import { normalisePostcode, quoteDelivery, roadDistanceKm, type FeeLine } from "@/lib/delivery";
 import { getMenu } from "@/lib/menu/get-menu";
 import { getKitchenLocation, lookupPostcode } from "@/lib/postcodes";
 import { formatPence, orderTotals, priceCart, unavailableLines, type CartLineInput } from "@/lib/pricing";
 import { checkRateLimit } from "@/lib/rate-limit";
-import { formatSlot, isValidSlot } from "@/lib/schedule";
+import { formatSlot, formatTime, isValidSlot } from "@/lib/schedule";
 import { getSettings } from "@/lib/settings";
 import { getStripe } from "@/lib/stripe";
 import { getAdminDb } from "@/lib/supabase/admin";
+import { isRainForecast } from "@/lib/weather";
 
 export type QuoteResult =
-  | { ok: true; postcode: string; distanceKm: number; feePence: number }
-  | { ok: false; message: string };
+  | { ok: true; postcode: string; distanceKm: number; feePence: number; breakdown: FeeLine[] }
+  | { ok: false; message: string; whatsapp?: boolean };
 
-const TOO_FAR = "Sorry, we don't deliver that far yet — please choose pickup.";
+const NOT_COVERED = "We don't deliver to that postcode online yet — message us on WhatsApp and we'll sort delivery for you.";
 
-/** Delivery fee for a postcode. Re-run server-side at checkout, so this is display only. */
-export async function quoteDeliveryAction(postcodeInput: string, lines: CartLineInput[]): Promise<QuoteResult> {
+/** Delivery fee for a postcode and time slot. Re-run server-side at checkout, so this is display only. */
+export async function quoteDeliveryAction(postcodeInput: string, lines: CartLineInput[], slot: string): Promise<QuoteResult> {
   if (!(await checkRateLimit("quote"))) return { ok: false, message: "Too many tries — please wait a few minutes." };
   const postcode = normalisePostcode(String(postcodeInput ?? ""));
   if (!postcode) return { ok: false, message: "Enter a valid UK postcode." };
   const parsedLines = cartSchema.safeParse(lines);
   if (!parsedLines.success) return { ok: false, message: "Your cart is empty." };
-  return deliveryQuoteFor(postcode, parsedLines.data);
+  const when = new Date(String(slot ?? ""));
+  return deliveryQuoteFor(postcode, parsedLines.data, Number.isNaN(when.getTime()) ? new Date() : when);
 }
 
-async function deliveryQuoteFor(postcode: string, lines: CartLineInput[]): Promise<QuoteResult> {
+async function deliveryQuoteFor(postcode: string, lines: CartLineInput[], when: Date): Promise<QuoteResult> {
   const [settings, menu] = await Promise.all([getSettings(), getMenu()]);
+  if (settings.deliveryPaused) return { ok: false, message: settings.deliveryPausedMessage };
+
   let customer;
   let kitchen;
   try {
@@ -40,18 +44,25 @@ async function deliveryQuoteFor(postcode: string, lines: CartLineInput[]): Promi
   }
   if (!customer) return { ok: false, message: "We couldn't find that postcode." };
 
+  const raining = settings.deliverySurcharges.rainPence > 0 ? await isRainForecast(kitchen, when) : false;
   const quote = quoteDelivery({
+    postcode,
     distanceKm: roadDistanceKm(kitchen, customer),
-    tiers: settings.deliveryTiers,
-    maxDeliveryKm: settings.maxDeliveryKm,
+    areas: settings.deliveryAreas,
+    pricing: settings.deliveryPricing,
+    surcharges: settings.deliverySurcharges,
+    slotTime: formatTime(when.toISOString()),
+    raining,
     subtotalPence: priceCart(lines, menu).subtotalPence,
     minOrderPence: settings.minOrderDeliveryPence,
   });
-  if (quote.ok) return { ok: true, postcode, distanceKm: quote.distanceKm, feePence: quote.feePence };
+  if (quote.ok) {
+    return { ok: true, postcode, distanceKm: quote.distanceKm, feePence: quote.feePence, breakdown: quote.breakdown };
+  }
   if (quote.reason === "below_minimum") {
     return { ok: false, message: `Delivery needs a minimum order of ${formatPence(quote.minimumPence ?? 0)}.` };
   }
-  return { ok: false, message: TOO_FAR };
+  return { ok: false, message: NOT_COVERED, whatsapp: true };
 }
 
 export type CheckoutResult =
@@ -103,13 +114,15 @@ export async function createCheckoutAction(input: CheckoutInput): Promise<Checko
   }
 
   let deliveryFeePence = 0;
+  let deliveryDetails = "";
   let distanceKm: number | null = null;
   const postcode = order.fulfilment === "delivery" ? normalisePostcode(order.postcode) : null;
   if (order.fulfilment === "delivery") {
-    const quote = await deliveryQuoteFor(postcode!, order.lines);
+    const quote = await deliveryQuoteFor(postcode!, order.lines, slotDate);
     if (!quote.ok) return fail(quote.message, { postcode: quote.message });
     deliveryFeePence = quote.feePence;
     distanceKm = quote.distanceKm;
+    deliveryDetails = quote.breakdown.length > 1 ? quote.breakdown.map((l) => `${l.label} ${formatPence(l.pence)}`).join(" + ") : "";
   }
 
   const vatRegistered = process.env.VAT_REGISTERED === "true";
@@ -205,7 +218,10 @@ export async function createCheckoutAction(input: CheckoutInput): Promise<Checko
                   price_data: {
                     currency: "gbp",
                     unit_amount: deliveryFeePence,
-                    product_data: { name: "Delivery", description: `${postcode} · ${distanceKm} km` },
+                    product_data: {
+                      name: "Delivery",
+                      description: [`${postcode} · ${distanceKm} km`, deliveryDetails].filter(Boolean).join(" · "),
+                    },
                   },
                 },
               ]

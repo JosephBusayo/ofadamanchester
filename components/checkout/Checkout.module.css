@@ -94,6 +94,12 @@
   transform: translateY(-2px);
   box-shadow: 0 4px 0 var(--ink);
 }
+.choice:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
 .choice[aria-checked="true"] {
   background: var(--primary);
   border-color: var(--primary);

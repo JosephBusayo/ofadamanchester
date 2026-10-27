@@ -191,7 +191,9 @@ MoiMoi £3.00 (**Saturdays only**) · Fried Plantain (6–8 pcs) £2.00 · Extra
 - `order_items` (id, order_id, product_name, unit_price_pence, qty, options jsonb,
   addons jsonb, line_total_pence) — **snapshot names/prices** so old orders never change
 - `settings` (single row: orders_paused, opening_hours jsonb, lead_time_minutes,
-  delivery_tiers jsonb, max_delivery_km, min_order_delivery_pence, pickup_address)
+  min_order_delivery_pence, pickup_address, + delivery columns from `0002_delivery_areas.sql`:
+  delivery_areas jsonb, delivery_base_pence, delivery_base_km, delivery_per_km_pence,
+  night_surcharge_pence, night_from, rain_surcharge_pence, delivery_paused, delivery_paused_message)
 
 RLS: public can `select` active menu + settings only. Orders are written **only by
 the server** using the service-role key. Only the owner's user can read/update orders.
@@ -205,7 +207,7 @@ the server** using the service-role key. Only the owner's user can read/update o
    localStorage; edit qty/options; shows subtotal.
 3. **Pickup or delivery** choice, then **date & time slot** within opening hours
    (ASAP or scheduled). MoiMoi only selectable when the chosen date is a Saturday.
-4. **Delivery fee by distance** from the kitchen (see below). Pickup = £0.
+4. **Delivery fee by postcode area** (see below). Pickup = £0.
 5. **Checkout** — guest only: name, email, UK mobile, address (delivery only), notes.
    Server recalculates everything, creates the order (`pending`) and a Stripe Checkout Session.
 6. **Stripe payment** — webhook `checkout.session.completed` marks order `paid`.
@@ -214,7 +216,7 @@ the server** using the service-role key. Only the owner's user can read/update o
 8. **Owner notifications** — email + WhatsApp on every paid order.
 9. **Admin** (`/admin`, owner only) — today's orders, filter by date/status,
    status flow `paid → preparing → ready/out for delivery → completed` (+ `cancelled`),
-   order detail, toggle "pause orders", edit item availability / sold-out, edit hours & delivery tiers.
+   order detail, toggle "pause orders" / "pause delivery", edit item availability / sold-out, edit hours, delivery areas & prices.
 10. **Allergens** — show the 14 UK allergens per item before purchase; "allergen info" link on every page.
 11. **Opening hours & cut-offs** — checkout blocked outside hours or when paused; clear message shown.
 
@@ -237,15 +239,22 @@ the server** using the service-role key. Only the owner's user can read/update o
     First sign-in at `/admin/login` shows a QR code to scan with an authenticator app.
   - Admin pages: `/admin` (orders by day + status, auto-refresh 30s), `/admin/orders/[id]`
     (status flow, resend confirmation, Stripe link), `/admin/menu` (sold out / hidden),
-    `/admin/settings` (pause orders, hours, prep time, delivery bands, pickup address).
+    `/admin/settings` (pause orders, pause delivery, hours, prep time, delivery areas/prices/surcharges, pickup address).
 
-### Delivery fee
-- Kitchen location from `KITCHEN_POSTCODE`. Customer postcode → postcodes.io → lat/lng
-  → distance (haversine × 1.3 road factor, or Google Distance Matrix if a key is added).
-- Fee from tiers in `settings.delivery_tiers`, e.g. (placeholder — client to confirm):
-  0–3 km £3.50 · 3–6 km £5.00 · 6–10 km £7.50 · >`max_delivery_km` → "Sorry, we don't deliver there, choose pickup".
-- Show the fee **before** payment, as a separate Stripe line item.
-- Future option: Uber Direct API quote for exact Uber fee (needs Uber Direct business account).
+### Delivery fee — by postcode area (client decision, 27 Oct 2026)
+The owner isn't on Uber Eats/Direct, so no courier API. Instead:
+- **Coverage = a list of postcode districts** (`settings.delivery_areas`, e.g. M14, SK4) edited in
+  `/admin/settings`. Customer postcode → district (`M14 5RG` → `M14`). Not on the list →
+  "message us on WhatsApp" with a link to **+44 7532 716848** (`site.deliveryWhatsapp`).
+- **Price per area**: a fixed price, or (if empty) automatic from distance — **£4.00 covers the
+  first 3 km, then £1.00 per extra km**, rounded up to 50p (all editable). Distance = kitchen
+  (`KITCHEN_POSTCODE`) → customer postcode via postcodes.io, haversine × 1.3.
+- **Surcharges** (0 = off): evening from `night_from` (default 19:00, +£1) and rain (+£1) when the
+  Open-Meteo forecast (free, no key) shows ≥ 0.5 mm/h at the delivery slot. Weather failure = no charge.
+- **Pause delivery only** toggle + customer message (bad weather, no driver); pickup still works.
+- Minimum order for delivery kept. No discounts (client decision).
+- Fee shown before payment with its breakdown, and as a separate Stripe line item.
+- Pure logic + tests: `lib/delivery.ts`. Weather: `lib/weather.ts`. Schema: `supabase/migrations/0002_delivery_areas.sql`.
 
 ### VAT
 - Menu prices are **VAT-inclusive** — never add 20% on top.
@@ -330,9 +339,8 @@ Commit a `.env.example` with these names and no values.
 ---
 
 ## Open Questions for the Client
-- Kitchen/pickup address & postcode; delivery radius and fee tiers.
+- Kitchen/pickup address & postcode (needed for automatic delivery prices); which postcode areas to deliver to.
 - Opening days/hours, order cut-off, minimum lead time (e.g. 45 min), max orders per slot.
-- Delivery handled by Uber Direct, own driver, or both?
 - VAT registered? (Yes/No)
 - Allergens for every item (sauce, MoiMoi, fried fish, etc.).
 - Domain name and sending email address.

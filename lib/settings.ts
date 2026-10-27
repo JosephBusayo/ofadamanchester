@@ -2,15 +2,20 @@ import "server-only";
 
 import { createClient } from "@supabase/supabase-js";
 import { cacheLife, cacheTag } from "next/cache";
-import type { DeliveryTier } from "./delivery";
+import type { DeliveryArea, DeliveryPricing, DeliverySurcharges } from "./delivery";
 import type { OpeningHours, ScheduleSettings } from "./schedule";
 
 export const SETTINGS_CACHE_TAG = "settings";
 
 export type ShopSettings = ScheduleSettings & {
   ordersPaused: boolean;
-  deliveryTiers: DeliveryTier[];
-  maxDeliveryKm: number;
+  /** Postcode districts we deliver to. Anything else is sent to WhatsApp. */
+  deliveryAreas: DeliveryArea[];
+  deliveryPricing: DeliveryPricing;
+  deliverySurcharges: DeliverySurcharges;
+  /** Switch off delivery only (e.g. bad weather) — pickup still works. */
+  deliveryPaused: boolean;
+  deliveryPausedMessage: string;
   minOrderDeliveryPence: number;
   pickupAddress: string;
 };
@@ -27,18 +32,22 @@ const DEFAULT_HOURS: OpeningHours = {
   "6": [{ open: "12:00", close: "20:00" }],
 };
 
+/** Central Manchester districts (M10 doesn't exist). Same list as the 0002 migration. */
+export const STARTER_DISTRICTS = ["M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M11", "M12", "M13", "M14", "M15", "M16", "M18", "M19", "M20", "M21", "M22", "M23"];
+export const DEFAULT_DELIVERY_PAUSED_MESSAGE = "We're not delivering right now — pickup is still open.";
+
 export const DEFAULT_SETTINGS: ShopSettings = {
   ordersPaused: false,
   openingHours: DEFAULT_HOURS,
   leadTimeMinutes: 45,
   slotMinutes: 30,
   daysAhead: 7,
-  deliveryTiers: [
-    { maxKm: 3, feePence: 350 },
-    { maxKm: 6, feePence: 500 },
-    { maxKm: 10, feePence: 750 },
-  ],
-  maxDeliveryKm: 10,
+  // TODO(client): starter list — the owner edits it in /admin/settings.
+  deliveryAreas: STARTER_DISTRICTS.map((district) => ({ district, feePence: null })),
+  deliveryPricing: { basePence: 400, baseKm: 3, perKmPence: 100 },
+  deliverySurcharges: { nightPence: 100, nightFrom: "19:00", rainPence: 100 },
+  deliveryPaused: false,
+  deliveryPausedMessage: DEFAULT_DELIVERY_PAUSED_MESSAGE,
   minOrderDeliveryPence: 0,
   pickupAddress: "Manchester (address confirmed in your email)",
 };
@@ -58,16 +67,12 @@ export async function getSettings(): Promise<ShopSettings> {
   if (error || !data) throw new Error(`Failed to load settings: ${error?.message ?? "no row"}`);
 
   const hours = data.opening_hours as OpeningHours;
-  const tiers = (data.delivery_tiers as { max_km: number; fee_pence: number }[]) ?? [];
   return {
     ...DEFAULT_SETTINGS,
     ordersPaused: data.orders_paused,
     openingHours: Object.keys(hours ?? {}).length ? hours : DEFAULT_HOURS,
     leadTimeMinutes: data.lead_time_minutes,
-    deliveryTiers: tiers.length
-      ? tiers.map((t) => ({ maxKm: Number(t.max_km), feePence: t.fee_pence }))
-      : DEFAULT_SETTINGS.deliveryTiers,
-    maxDeliveryKm: Number(data.max_delivery_km),
+    ...deliveryFromRow(data),
     minOrderDeliveryPence: data.min_order_delivery_pence,
     pickupAddress: data.pickup_address || DEFAULT_SETTINGS.pickupAddress,
   };
@@ -82,7 +87,29 @@ export function publicSettings(s: ShopSettings) {
     slotMinutes: s.slotMinutes,
     daysAhead: s.daysAhead,
     pickupAddress: s.pickupAddress,
+    deliveryPaused: s.deliveryPaused,
+    deliveryPausedMessage: s.deliveryPausedMessage,
     vatRegistered: process.env.VAT_REGISTERED === "true",
   };
 }
 export type PublicSettings = ReturnType<typeof publicSettings>;
+
+/** Settings row → delivery settings. Shared by the shop and the admin form. */
+export function deliveryFromRow(row: Record<string, unknown>) {
+  const areas = (row.delivery_areas as { district: string; fee_pence: number | null }[] | null) ?? [];
+  return {
+    deliveryAreas: areas.map((a) => ({ district: a.district, feePence: a.fee_pence ?? null })),
+    deliveryPricing: {
+      basePence: Number(row.delivery_base_pence ?? 400),
+      baseKm: Number(row.delivery_base_km ?? 3),
+      perKmPence: Number(row.delivery_per_km_pence ?? 100),
+    },
+    deliverySurcharges: {
+      nightPence: Number(row.night_surcharge_pence ?? 0),
+      nightFrom: String(row.night_from ?? "19:00"),
+      rainPence: Number(row.rain_surcharge_pence ?? 0),
+    },
+    deliveryPaused: Boolean(row.delivery_paused),
+    deliveryPausedMessage: String(row.delivery_paused_message || DEFAULT_DELIVERY_PAUSED_MESSAGE),
+  };
+}

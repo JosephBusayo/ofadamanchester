@@ -1,7 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { saveSettingsAction, setOrdersPausedAction, type SaveResult, type SettingsInput } from "@/app/admin/settings/actions";
+import {
+  saveSettingsAction,
+  setDeliveryPausedAction,
+  setOrdersPausedAction,
+  type SaveResult,
+  type SettingsInput,
+} from "@/app/admin/settings/actions";
+import { normaliseDistrict } from "@/lib/delivery";
 import styles from "./Admin.module.css";
 
 const DAYS = [
@@ -18,7 +25,9 @@ type DayKey = (typeof DAYS)[number][0];
 const toPounds = (p: number) => (p / 100).toFixed(2);
 const toPence = (s: string) => Math.round(parseFloat(s || "0") * 100);
 
-export function SettingsForm({ initial }: { initial: SettingsInput }) {
+type AutoPrices = Record<string, { km: number; pence: number } | null>;
+
+export function SettingsForm({ initial, autoPrices }: { initial: SettingsInput; autoPrices: AutoPrices }) {
   const [s, setS] = useState(initial);
   const [pending, start] = useTransition();
   const [result, setResult] = useState<SaveResult | null>(null);
@@ -36,6 +45,26 @@ export function SettingsForm({ initial }: { initial: SettingsInput }) {
       const r = await setOrdersPausedAction(paused);
       setResult(r);
       if (r.ok) setS((prev) => ({ ...prev, ordersPaused: paused }));
+    });
+  };
+
+  const [newArea, setNewArea] = useState("");
+  const [areaError, setAreaError] = useState("");
+  const addArea = () => {
+    const district = normaliseDistrict(newArea);
+    if (!district) return setAreaError("Type the first part of a postcode, e.g. M14 or SK4.");
+    if (s.deliveryAreas.some((a) => a.district === district)) return setAreaError(`${district} is already on the list.`);
+    update({ deliveryAreas: [...s.deliveryAreas, { district, feePence: null }] });
+    setNewArea("");
+    setAreaError("");
+  };
+
+  const toggleDelivery = () => {
+    const paused = !s.deliveryPaused;
+    start(async () => {
+      const r = await setDeliveryPausedAction(paused, s.deliveryPausedMessage);
+      setResult(r);
+      if (r.ok) setS((prev) => ({ ...prev, deliveryPaused: paused }));
     });
   };
 
@@ -129,78 +158,196 @@ export function SettingsForm({ initial }: { initial: SettingsInput }) {
       </section>
 
       <section className={styles.card}>
-        <h2 className={styles.cardTitle}>Delivery</h2>
-        <p className={styles.hint}>Fee by driving distance from the kitchen (about 1.3× straight-line). Bands are matched from the shortest.</p>
-        {s.deliveryTiers.map((t, i) => (
-          <div key={i} className={styles.btnRow} style={{ alignItems: "center", marginTop: 10 }}>
-            <span>Up to</span>
-            <input
-              type="number"
-              step="0.5"
-              min={0.5}
-              className={`${styles.input} ${styles.inputSmall}`}
-              value={t.maxKm}
-              aria-label={`Band ${i + 1} distance in km`}
-              onChange={(e) =>
-                update({ deliveryTiers: s.deliveryTiers.map((x, j) => (j === i ? { ...x, maxKm: Number(e.target.value) } : x)) })
-              }
-            />
-            <span>km → £</span>
-            <input
-              type="number"
-              step="0.50"
-              min={0}
-              className={`${styles.input} ${styles.inputSmall}`}
-              value={toPounds(t.feePence)}
-              aria-label={`Band ${i + 1} fee in pounds`}
-              onChange={(e) =>
-                update({ deliveryTiers: s.deliveryTiers.map((x, j) => (j === i ? { ...x, feePence: toPence(e.target.value) } : x)) })
-              }
-            />
-            {s.deliveryTiers.length > 1 && (
-              <button type="button" className={styles.signOut} onClick={() => update({ deliveryTiers: s.deliveryTiers.filter((_, j) => j !== i) })}>
-                Remove
-              </button>
-            )}
+        <div className={styles.row}>
+          <div>
+            <h2 className={styles.cardTitle} style={{ marginBottom: 4 }}>
+              {s.deliveryPaused ? "Delivery paused" : "Delivering"}
+            </h2>
+            <p className={styles.hint}>Turn off delivery only (bad weather, no driver). Pickup keeps working. Takes effect immediately.</p>
           </div>
-        ))}
-        {s.deliveryTiers.length < 6 && (
           <button
             type="button"
-            className={styles.signOut}
-            style={{ marginTop: 10 }}
-            onClick={() => {
-              const last = s.deliveryTiers.at(-1);
-              update({ deliveryTiers: [...s.deliveryTiers, { maxKm: (last?.maxKm ?? 0) + 3, feePence: (last?.feePence ?? 300) + 200 }] });
-            }}
-          >
-            + Add band
-          </button>
-        )}
-        <div className={styles.btnRow} style={{ marginTop: 16 }}>
-          <label className={styles.field}>
-            <span className={styles.label}>Furthest delivery (km)</span>
-            <input
-              type="number"
-              step="0.5"
-              min={0.5}
-              className={`${styles.input} ${styles.inputSmall}`}
-              value={s.maxDeliveryKm}
-              onChange={(e) => update({ maxDeliveryKm: Number(e.target.value) })}
-            />
-          </label>
-          <label className={styles.field}>
-            <span className={styles.label}>Minimum order for delivery (£)</span>
-            <input
-              type="number"
-              step="0.50"
-              min={0}
-              className={`${styles.input} ${styles.inputSmall}`}
-              value={toPounds(s.minOrderDeliveryPence)}
-              onChange={(e) => update({ minOrderDeliveryPence: toPence(e.target.value) })}
-            />
-          </label>
+            role="switch"
+            aria-checked={!s.deliveryPaused}
+            aria-label="Delivering"
+            className={styles.toggle}
+            onClick={toggleDelivery}
+            disabled={pending}
+          />
         </div>
+        <label className={styles.field} style={{ marginTop: 12 }}>
+          <span className={styles.label}>Message customers see when delivery is off</span>
+          <input
+            className={styles.input}
+            value={s.deliveryPausedMessage}
+            maxLength={160}
+            onChange={(e) => update({ deliveryPausedMessage: e.target.value })}
+          />
+        </label>
+      </section>
+
+      <section className={styles.card}>
+        <h2 className={styles.cardTitle}>Delivery price</h2>
+        <p className={styles.hint}>
+          The automatic price: the base fee covers the first few km from the kitchen, then each extra km is added. Prices are rounded
+          up to the next 50p.
+        </p>
+        <div className={styles.btnRow} style={{ alignItems: "center", marginTop: 10 }}>
+          <span>£</span>
+          <input
+            type="number"
+            step="0.50"
+            min={0}
+            className={`${styles.input} ${styles.inputSmall}`}
+            value={toPounds(s.deliveryPricing.basePence)}
+            aria-label="Base delivery fee in pounds"
+            onChange={(e) => update({ deliveryPricing: { ...s.deliveryPricing, basePence: toPence(e.target.value) } })}
+          />
+          <span>for the first</span>
+          <input
+            type="number"
+            step="0.5"
+            min={0}
+            className={`${styles.input} ${styles.inputSmall}`}
+            value={s.deliveryPricing.baseKm}
+            aria-label="Km covered by the base fee"
+            onChange={(e) => update({ deliveryPricing: { ...s.deliveryPricing, baseKm: Number(e.target.value) } })}
+          />
+          <span>km, then £</span>
+          <input
+            type="number"
+            step="0.10"
+            min={0}
+            className={`${styles.input} ${styles.inputSmall}`}
+            value={toPounds(s.deliveryPricing.perKmPence)}
+            aria-label="Price per extra km in pounds"
+            onChange={(e) => update({ deliveryPricing: { ...s.deliveryPricing, perKmPence: toPence(e.target.value) } })}
+          />
+          <span>per extra km</span>
+        </div>
+
+        <h3 className={styles.label} style={{ marginTop: 22 }}>Extra charges (£0 = off)</h3>
+        <div className={styles.btnRow} style={{ alignItems: "center", marginTop: 8 }}>
+          <span>Evening: deliveries from</span>
+          <input
+            type="time"
+            className={`${styles.input} ${styles.inputSmall}`}
+            style={{ width: 140 }}
+            value={s.deliverySurcharges.nightFrom}
+            aria-label="Evening charge starts at"
+            onChange={(e) => update({ deliverySurcharges: { ...s.deliverySurcharges, nightFrom: e.target.value } })}
+          />
+          <span>add £</span>
+          <input
+            type="number"
+            step="0.50"
+            min={0}
+            className={`${styles.input} ${styles.inputSmall}`}
+            value={toPounds(s.deliverySurcharges.nightPence)}
+            aria-label="Evening charge in pounds"
+            onChange={(e) => update({ deliverySurcharges: { ...s.deliverySurcharges, nightPence: toPence(e.target.value) } })}
+          />
+        </div>
+        <div className={styles.btnRow} style={{ alignItems: "center", marginTop: 8 }}>
+          <span>Rain: when rain is forecast at the delivery time, add £</span>
+          <input
+            type="number"
+            step="0.50"
+            min={0}
+            className={`${styles.input} ${styles.inputSmall}`}
+            value={toPounds(s.deliverySurcharges.rainPence)}
+            aria-label="Rain charge in pounds"
+            onChange={(e) => update({ deliverySurcharges: { ...s.deliverySurcharges, rainPence: toPence(e.target.value) } })}
+          />
+        </div>
+        <p className={styles.hint} style={{ marginTop: 6 }}>Rain is checked automatically from the weather forecast for Manchester.</p>
+
+        <label className={styles.field} style={{ marginTop: 16 }}>
+          <span className={styles.label}>Minimum order for delivery (£)</span>
+          <input
+            type="number"
+            step="0.50"
+            min={0}
+            className={`${styles.input} ${styles.inputSmall}`}
+            value={toPounds(s.minOrderDeliveryPence)}
+            onChange={(e) => update({ minOrderDeliveryPence: toPence(e.target.value) })}
+          />
+        </label>
+      </section>
+
+      <section className={styles.card}>
+        <h2 className={styles.cardTitle}>Where we deliver</h2>
+        <p className={styles.hint}>
+          Postcode areas (the first part of a postcode, e.g. M14). Leave the price empty to use the automatic price, or type a fixed
+          price. Customers outside this list are sent to WhatsApp.
+        </p>
+        {s.deliveryAreas.length === 0 && <p className={styles.error}>No areas — nobody can order delivery online.</p>}
+        {s.deliveryAreas.map((a, i) => {
+          const auto = autoPrices[a.district];
+          return (
+            <div key={a.district} className={styles.btnRow} style={{ alignItems: "center", marginTop: 8 }}>
+              <strong style={{ minWidth: 64 }}>{a.district}</strong>
+              <span>£</span>
+              <input
+                type="number"
+                step="0.50"
+                min={0}
+                className={`${styles.input} ${styles.inputSmall}`}
+                value={a.feePence === null ? "" : toPounds(a.feePence)}
+                placeholder={auto ? toPounds(auto.pence) : "auto"}
+                aria-label={`${a.district} price in pounds (empty = automatic)`}
+                onChange={(e) =>
+                  update({
+                    deliveryAreas: s.deliveryAreas.map((x, j) =>
+                      j === i ? { ...x, feePence: e.target.value === "" ? null : toPence(e.target.value) } : x,
+                    ),
+                  })
+                }
+              />
+              <span className={styles.hint}>
+                {a.feePence !== null
+                  ? "Fixed price"
+                  : auto
+                    ? `Auto · about ${auto.km.toFixed(1)} km`
+                    : "Auto · shown after saving"}
+              </span>
+              <button
+                type="button"
+                className={styles.signOut}
+                onClick={() => update({ deliveryAreas: s.deliveryAreas.filter((_, j) => j !== i) })}
+              >
+                Remove
+              </button>
+            </div>
+          );
+        })}
+        <div className={styles.btnRow} style={{ alignItems: "center", marginTop: 14 }}>
+          <input
+            className={`${styles.input} ${styles.inputSmall}`}
+            style={{ width: 120 }}
+            value={newArea}
+            placeholder="e.g. M14"
+            aria-label="Add a postcode area"
+            maxLength={4}
+            onChange={(e) => {
+              setNewArea(e.target.value);
+              setAreaError("");
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addArea();
+              }
+            }}
+          />
+          <button type="button" className={styles.signOut} onClick={addArea}>
+            + Add area
+          </button>
+        </div>
+        {areaError && <p className={styles.error}>{areaError}</p>}
+        <p className={styles.hint} style={{ marginTop: 10 }}>
+          Auto prices are measured to the middle of each area, so a customer at the edge may pay 50p more or less.
+        </p>
       </section>
 
       <section className={styles.card}>

@@ -12,7 +12,8 @@ export const checkoutCopy = {
   pickup: "PICKUP",
   pickupNote: "Collect from",
   delivery: "DELIVERY",
-  deliveryNote: "Fee based on distance from our kitchen",
+  deliveryNote: "Fee depends on your postcode",
+  deliveryWhatsapp: "WhatsApp",
 
   whenTitle: "WHEN?",
   asap: "ASAP",

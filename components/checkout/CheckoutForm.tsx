@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { createCheckoutAction, quoteDeliveryAction, type QuoteResult } from "@/app/(site)/checkout/actions";
 import { checkoutCopy as copy } from "@/content/checkout";
+import { site } from "@/content/site";
 import { useCart } from "@/lib/cart";
 import type { FieldErrors } from "@/lib/checkout-schema";
 import type { Menu } from "@/lib/menu/types";
@@ -73,14 +74,23 @@ export function CheckoutForm({
     if (key === "postcode") setQuote(null);
   };
 
-  const checkPostcode = () => {
-    if (!form.postcode.trim()) return;
+  const checkPostcode = (postcode = form.postcode) => {
+    if (!postcode.trim()) return;
     startQuote(async () => {
-      const result = await quoteDeliveryAction(form.postcode, lines);
+      const result = await quoteDeliveryAction(postcode, lines, slot);
       setQuote(result);
       if (result.ok) setForm((f) => ({ ...f, postcode: result.postcode }));
     });
   };
+
+  // Evening and rain surcharges depend on the time, so re-price when the slot changes.
+  const quotedSlot = useRef(slot);
+  useEffect(() => {
+    if (quotedSlot.current === slot) return;
+    quotedSlot.current = slot;
+    if (fulfilment === "delivery" && quote?.ok) checkPostcode(quote.postcode);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only when the slot changes
+  }, [slot]);
 
   const deliveryFee = fulfilment === "delivery" && quote?.ok ? quote.feePence : 0;
   const totals = orderTotals(cart.subtotalPence, deliveryFee, settings.vatRegistered);
@@ -143,11 +153,16 @@ export function CheckoutForm({
                   role="radio"
                   aria-checked={fulfilment === f}
                   className={styles.choice}
+                  disabled={f === "delivery" && settings.deliveryPaused}
                   onClick={() => setFulfilment(f)}
                 >
                   <span className={styles.choiceName}>{f === "pickup" ? copy.pickup : copy.delivery}</span>
                   <span className={styles.choiceNote}>
-                    {f === "pickup" ? `${copy.pickupNote} ${settings.pickupAddress}` : copy.deliveryNote}
+                    {f === "pickup"
+                      ? `${copy.pickupNote} ${settings.pickupAddress}`
+                      : settings.deliveryPaused
+                        ? settings.deliveryPausedMessage
+                        : copy.deliveryNote}
                   </span>
                 </button>
               ))}
@@ -214,7 +229,7 @@ export function CheckoutForm({
                       className={styles.input}
                       value={form.postcode}
                       onChange={set("postcode")}
-                      onBlur={checkPostcode}
+                      onBlur={() => checkPostcode()}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -226,16 +241,30 @@ export function CheckoutForm({
                       maxLength={10}
                       aria-invalid={!!errors.postcode || quote?.ok === false}
                     />
-                    <button type="button" className={styles.btnSmall} onClick={checkPostcode} disabled={quoting}>
+                    <button type="button" className={styles.btnSmall} onClick={() => checkPostcode()} disabled={quoting}>
                       {quoting ? "…" : copy.checkPostcode}
                     </button>
                   </div>
                   {quote?.ok === true && (
                     <span className={styles.ok}>
                       {formatPence(quote.feePence)} delivery · about {quote.distanceKm.toFixed(1)} km away
+                      {quote.breakdown.length > 1 &&
+                        ` (${quote.breakdown.map((l) => `${l.label} ${formatPence(l.pence)}`).join(" + ")})`}
                     </span>
                   )}
-                  {quote?.ok === false && <span className={styles.error}>{quote.message}</span>}
+                  {quote?.ok === false && (
+                    <span className={styles.error}>
+                      {quote.message}
+                      {quote.whatsapp && (
+                        <>
+                          {" "}
+                          <a className="underline" href={site.deliveryWhatsapp.href} target="_blank" rel="noopener noreferrer">
+                            {copy.deliveryWhatsapp} {site.deliveryWhatsapp.display}
+                          </a>
+                        </>
+                      )}
+                    </span>
+                  )}
                   {!quote && errors.postcode && <span className={styles.error}>{errors.postcode}</span>}
                 </label>
                 <Field label={copy.address1} value={form.address1} onChange={set("address1")} error={errors.address1} autoComplete="address-line1" full />

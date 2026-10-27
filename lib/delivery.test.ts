@@ -1,12 +1,22 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { haversineKm, normalisePostcode, quoteDelivery, roadDistanceKm, type DeliveryTier } from "./delivery.ts";
+import {
+  distanceFeePence,
+  haversineKm,
+  isNight,
+  normaliseDistrict,
+  normalisePostcode,
+  postcodeDistrict,
+  quoteDelivery,
+  roadDistanceKm,
+  type DeliveryArea,
+} from "./delivery.ts";
 
-// Placeholder tiers from CLAUDE.md (client to confirm).
-const tiers: DeliveryTier[] = [
-  { maxKm: 3, feePence: 350 },
-  { maxKm: 6, feePence: 500 },
-  { maxKm: 10, feePence: 750 },
+const pricing = { basePence: 400, baseKm: 3, perKmPence: 100 };
+const surcharges = { nightPence: 100, nightFrom: "19:00", rainPence: 150 };
+const areas: DeliveryArea[] = [
+  { district: "M14", feePence: null },
+  { district: "M20", feePence: 650 },
 ];
 
 describe("distance", () => {
@@ -26,41 +36,93 @@ describe("distance", () => {
   it("same point is zero", () => assert.equal(haversineKm(piccadilly, piccadilly), 0));
 });
 
-describe("delivery fee tiers", () => {
-  const quote = (distanceKm: number, extra = {}) => quoteDelivery({ distanceKm, tiers, maxDeliveryKm: 10, ...extra });
-
-  it("0–3 km = £3.50", () => {
-    assert.deepEqual(quote(0.4), { ok: true, distanceKm: 0.4, feePence: 350 });
-    assert.deepEqual(quote(3), { ok: true, distanceKm: 3, feePence: 350 });
+describe("distance price", () => {
+  it("£4 minimum covers the first 3 km", () => {
+    assert.equal(distanceFeePence(0.5, pricing), 400);
+    assert.equal(distanceFeePence(3, pricing), 400);
   });
 
-  it("3–6 km = £5.00", () => assert.deepEqual(quote(3.01), { ok: true, distanceKm: 3.01, feePence: 500 }));
+  it("adds per km after that, rounded up to 50p", () => {
+    assert.equal(distanceFeePence(3.2, pricing), 450); // £4.20 → £4.50
+    assert.equal(distanceFeePence(5, pricing), 600); // £6.00 exactly
+    assert.equal(distanceFeePence(7.6, pricing), 900); // £8.60 → £9.00
+  });
+});
 
-  it("6–10 km = £7.50", () => assert.deepEqual(quote(10), { ok: true, distanceKm: 10, feePence: 750 }));
+describe("delivery quote", () => {
+  const base = { distanceKm: 5, areas, pricing, surcharges, slotTime: "13:00", raining: false };
+  const quote = (postcode: string, extra = {}) => quoteDelivery({ ...base, postcode, ...extra });
 
-  it("beyond the max radius → no delivery", () => {
-    assert.deepEqual(quote(10.2), { ok: false, distanceKm: 10.2, reason: "too_far" });
+  it("listed district without a fixed price → distance price", () => {
+    assert.deepEqual(quote("M14 5RG"), { ok: true, distanceKm: 5, feePence: 600, breakdown: [{ label: "Delivery", pence: 600 }] });
   });
 
-  it("beyond the last tier → no delivery, even if under max radius", () => {
-    assert.equal(quoteDelivery({ distanceKm: 8, tiers: tiers.slice(0, 2), maxDeliveryKm: 10 }).ok, false);
+  it("fixed price is used", () => {
+    const q = quote("M20 2XY");
+    assert.ok(q.ok);
+    assert.equal(q.feePence, 650);
   });
 
-  it("tiers are matched regardless of their order", () => {
-    assert.deepEqual(
-      quoteDelivery({ distanceKm: 2, tiers: [...tiers].reverse(), maxDeliveryKm: 10 }),
-      { ok: true, distanceKm: 2, feePence: 350 },
-    );
+  it("unlisted district → not covered (sent to WhatsApp)", () => {
+    assert.deepEqual(quote("M1 1AE"), { ok: false, reason: "not_covered" });
+    // M1 must not match M14 by prefix
+    assert.deepEqual(quoteDelivery({ ...base, postcode: "M1 1AE", areas: [{ district: "M14", feePence: null }] }), {
+      ok: false,
+      reason: "not_covered",
+    });
   });
+
+  it("evening surcharge from nightFrom", () => {
+    const q = quote("M20 2XY", { slotTime: "19:30" });
+    assert.ok(q.ok);
+    assert.equal(q.feePence, 750);
+    assert.deepEqual(q.breakdown.at(-1), { label: "Evening delivery", pence: 100 });
+    const before = quote("M20 2XY", { slotTime: "18:59" });
+    assert.ok(before.ok);
+    assert.equal(before.feePence, 650);
+  });
+
+  it("rain surcharge only when raining, and stacks with night", () => {
+    const q = quote("M20 2XY", { slotTime: "20:00", raining: true });
+    assert.ok(q.ok);
+    assert.equal(q.feePence, 650 + 100 + 150);
+    assert.equal(q.breakdown.length, 3);
+  });
+
+  it("surcharges of 0 are off", () => {
+    const q = quote("M20 2XY", { slotTime: "21:00", raining: true, surcharges: { nightPence: 0, nightFrom: "19:00", rainPence: 0 } });
+    assert.ok(q.ok);
+    assert.equal(q.feePence, 650);
+  });
+
+  it("delivery paused → paused", () => assert.deepEqual(quote("M14 5RG", { deliveryPaused: true }), { ok: false, reason: "paused" }));
 
   it("enforces a minimum order for delivery", () => {
-    assert.deepEqual(quote(2, { subtotalPence: 900, minOrderPence: 1000 }), {
+    assert.deepEqual(quote("M14 5RG", { subtotalPence: 900, minOrderPence: 1000 }), {
       ok: false,
-      distanceKm: 2,
       reason: "below_minimum",
       minimumPence: 1000,
     });
-    assert.equal(quote(2, { subtotalPence: 1000, minOrderPence: 1000 }).ok, true);
+    assert.equal(quote("M14 5RG", { subtotalPence: 1000, minOrderPence: 1000 }).ok, true);
+  });
+});
+
+describe("districts and night", () => {
+  it("district from postcode", () => {
+    assert.equal(postcodeDistrict("M14 5RG"), "M14");
+    assert.equal(postcodeDistrict("SW1A 1AA"), "SW1A");
+  });
+  it("normalises districts", () => {
+    assert.equal(normaliseDistrict(" m14 "), "M14");
+    assert.equal(normaliseDistrict("sk4"), "SK4");
+    assert.equal(normaliseDistrict("M14 5RG"), null);
+    assert.equal(normaliseDistrict("14"), null);
+  });
+  it("night runs from nightFrom to 06:00", () => {
+    assert.equal(isNight("19:00", "19:00"), true);
+    assert.equal(isNight("23:30", "19:00"), true);
+    assert.equal(isNight("02:00", "19:00"), true);
+    assert.equal(isNight("12:00", "19:00"), false);
   });
 });
 

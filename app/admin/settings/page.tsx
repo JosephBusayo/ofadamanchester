@@ -4,7 +4,9 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { SettingsForm } from "@/components/admin/SettingsForm";
 import { TestNotifications } from "@/components/admin/TestNotifications";
 import { requireAdmin } from "@/lib/admin/auth";
-import { DEFAULT_SETTINGS } from "@/lib/settings";
+import { distanceFeePence, roadDistanceKm } from "@/lib/delivery";
+import { getKitchenLocation, lookupDistrict } from "@/lib/postcodes";
+import { DEFAULT_SETTINGS, deliveryFromRow } from "@/lib/settings";
 import type { OpeningHours } from "@/lib/schedule";
 
 export const metadata = { title: "Settings" };
@@ -28,7 +30,7 @@ async function Settings() {
 
   const hours = (data.opening_hours ?? {}) as OpeningHours;
   const hasHours = Object.keys(hours).length > 0;
-  const tiers = (data.delivery_tiers ?? []) as { max_km: number; fee_pence: number }[];
+  const delivery = deliveryFromRow(data);
   const openingHours = Object.fromEntries(
     ["0", "1", "2", "3", "4", "5", "6"].map((d) => [
       d,
@@ -40,18 +42,37 @@ async function Settings() {
     <div className={styles.stack}>
       <TestNotifications />
       <SettingsForm
+      autoPrices={await autoPrices(delivery.deliveryAreas.map((a) => a.district), delivery.deliveryPricing)}
       initial={{
         ordersPaused: data.orders_paused,
         openingHours,
         leadTimeMinutes: data.lead_time_minutes,
-        deliveryTiers: tiers.length
-          ? tiers.map((t) => ({ maxKm: Number(t.max_km), feePence: t.fee_pence }))
-          : DEFAULT_SETTINGS.deliveryTiers,
-        maxDeliveryKm: Number(data.max_delivery_km),
+        ...delivery,
         minOrderDeliveryPence: data.min_order_delivery_pence,
         pickupAddress: data.pickup_address || "",
       }}
       />
     </div>
   );
+}
+
+/** The distance price for each area (measured to the area's centre), so the owner can see what "auto" means. */
+async function autoPrices(
+  districts: string[],
+  pricing: { basePence: number; baseKm: number; perKmPence: number },
+): Promise<Record<string, { km: number; pence: number } | null>> {
+  try {
+    const kitchen = await getKitchenLocation();
+    const entries = await Promise.all(
+      districts.map(async (d) => {
+        const centre = await lookupDistrict(d).catch(() => null);
+        if (!centre) return [d, null] as const;
+        const km = roadDistanceKm(kitchen, centre);
+        return [d, { km, pence: distanceFeePence(km, pricing) }] as const;
+      }),
+    );
+    return Object.fromEntries(entries);
+  } catch {
+    return {};
+  }
 }
