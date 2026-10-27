@@ -21,7 +21,7 @@ alter table public.settings
 update public.settings
 set delivery_areas = (
   select jsonb_agg(jsonb_build_object('district', d, 'fee_pence', null))
-  from unnest(array['M1','M2','M3','M4','M5','M6','M7','M8','M9','M11','M12','M13','M14','M15','M16','M18','M19','M20','M21','M22','M23']) as d
+  from unnest(array['M1','M2','M3','M4','M5','M6','M7','M8','M9','M11','M12','M13','M14','M15','M16','M18','M19','M20','M21','M22','M23','M25','M27','M30','M50']) as d
 )
 where id;
 

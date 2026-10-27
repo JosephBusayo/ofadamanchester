@@ -32,8 +32,8 @@ const DEFAULT_HOURS: OpeningHours = {
   "6": [{ open: "12:00", close: "20:00" }],
 };
 
-/** Central Manchester districts (M10 doesn't exist). Same list as the 0002 migration. */
-export const STARTER_DISTRICTS = ["M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M11", "M12", "M13", "M14", "M15", "M16", "M18", "M19", "M20", "M21", "M22", "M23"];
+/** Central Manchester + nearby Salford districts (M10 doesn't exist). Same list as the 0002 migration. */
+export const STARTER_DISTRICTS = ["M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M11", "M12", "M13", "M14", "M15", "M16", "M18", "M19", "M20", "M21", "M22", "M23", "M25", "M27", "M30", "M50"];
 export const DEFAULT_DELIVERY_PAUSED_MESSAGE = "We're not delivering right now — pickup is still open.";
 
 export const DEFAULT_SETTINGS: ShopSettings = {
