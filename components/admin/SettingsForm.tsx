@@ -189,8 +189,8 @@ export function SettingsForm({ initial, autoPrices }: { initial: SettingsInput; 
       <section className={styles.card}>
         <h2 className={styles.cardTitle}>Delivery price</h2>
         <p className={styles.hint}>
-          The automatic price: the base fee covers the first few km from the kitchen, then each extra km is added. Prices are rounded
-          up to the next 50p.
+          The base fee is the minimum and covers the first few km from the kitchen; each extra km is added on top. Prices are
+          rounded up to the next 50p.
         </p>
         <div className={styles.btnRow} style={{ alignItems: "center", marginTop: 10 }}>
           <span>£</span>
@@ -225,6 +225,33 @@ export function SettingsForm({ initial, autoPrices }: { initial: SettingsInput; 
           />
           <span>per extra km</span>
         </div>
+        <div className={styles.btnRow} style={{ alignItems: "center", marginTop: 10 }}>
+          <span>Long-distance discount:</span>
+          <input
+            type="number"
+            step="1"
+            min={0}
+            max={50}
+            className={`${styles.input} ${styles.inputSmall}`}
+            value={s.deliveryPricing.farDiscountPercent}
+            aria-label="Long-distance discount percent"
+            onChange={(e) => update({ deliveryPricing: { ...s.deliveryPricing, farDiscountPercent: Number(e.target.value) } })}
+          />
+          <span>% off deliveries further than</span>
+          <input
+            type="number"
+            step="0.5"
+            min={0}
+            className={`${styles.input} ${styles.inputSmall}`}
+            value={s.deliveryPricing.farKm}
+            aria-label="Discount applies beyond this many km"
+            onChange={(e) => update({ deliveryPricing: { ...s.deliveryPricing, farKm: Number(e.target.value) } })}
+          />
+          <span>km</span>
+        </div>
+        <p className={styles.hint} style={{ marginTop: 6 }}>
+          Also applies to fixed-price areas that far away. Never takes a fee below the base fee. 0% = no discount.
+        </p>
 
         <h3 className={styles.label} style={{ marginTop: 22 }}>Extra charges (£0 = off)</h3>
         <div className={styles.btnRow} style={{ alignItems: "center", marginTop: 8 }}>
@@ -308,7 +335,7 @@ export function SettingsForm({ initial, autoPrices }: { initial: SettingsInput; 
                 {a.feePence !== null
                   ? "Fixed price"
                   : auto
-                    ? `Auto · about ${auto.km.toFixed(1)} km`
+                    ? `Auto · about ${auto.km.toFixed(1)} km${auto.km > s.deliveryPricing.farKm && s.deliveryPricing.farDiscountPercent > 0 ? ` · ${s.deliveryPricing.farDiscountPercent}% off included` : ""}`
                     : "Auto · shown after saving"}
               </span>
               <button

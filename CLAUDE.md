@@ -193,7 +193,8 @@ MoiMoi £3.00 (**Saturdays only**) · Fried Plantain (6–8 pcs) £2.00 · Extra
 - `settings` (single row: orders_paused, opening_hours jsonb, lead_time_minutes,
   min_order_delivery_pence, pickup_address, + delivery columns from `0002_delivery_areas.sql`:
   delivery_areas jsonb, delivery_base_pence, delivery_base_km, delivery_per_km_pence,
-  night_surcharge_pence, night_from, rain_surcharge_pence, delivery_paused, delivery_paused_message)
+  night_surcharge_pence, night_from, rain_surcharge_pence, delivery_paused, delivery_paused_message,
+  delivery_far_km, delivery_far_discount_percent from `0003`)
 
 RLS: public can `select` active menu + settings only. Orders are written **only by
 the server** using the service-role key. Only the owner's user can read/update orders.
@@ -245,16 +246,18 @@ the server** using the service-role key. Only the owner's user can read/update o
 The owner isn't on Uber Eats/Direct, so no courier API. Instead:
 - **Coverage = a list of postcode districts** (`settings.delivery_areas`, e.g. M14, SK4) edited in
   `/admin/settings`. Customer postcode → district (`M14 5RG` → `M14`). Not on the list →
-  "message us on WhatsApp" with a link to **+44 7532 716848** (`site.deliveryWhatsapp`).
-- **Price per area**: a fixed price, or (if empty) automatic from distance — **£4.00 covers the
-  first 3 km, then £1.00 per extra km**, rounded up to 50p (all editable). Distance = kitchen
+  "message us on WhatsApp" with a link to the business WhatsApp **+44 7932 541874** (`site.whatsapp`, used site-wide).
+- **Price per area**: a fixed price, or (if empty) automatic from distance — **£4.50 (the minimum)
+  covers the first 3 km, then £1.00 per extra km**, rounded up to 50p (all editable).
+- **Long-distance discount**: 5% off the delivery price only beyond `delivery_far_km` (default 8 km),
+  never below £4.50, shown as its own line. No discount anywhere else (client decision). Distance = kitchen
   (`KITCHEN_POSTCODE`) → customer postcode via postcodes.io, haversine × 1.3.
 - **Surcharges** (0 = off): evening from `night_from` (default 19:00, +£1) and rain (+£1) when the
   Open-Meteo forecast (free, no key) shows ≥ 0.5 mm/h at the delivery slot. Weather failure = no charge.
 - **Pause delivery only** toggle + customer message (bad weather, no driver); pickup still works.
-- Minimum order for delivery kept. No discounts (client decision).
+- Minimum order for delivery kept.
 - Fee shown before payment with its breakdown, and as a separate Stripe line item.
-- Pure logic + tests: `lib/delivery.ts`. Weather: `lib/weather.ts`. Schema: `supabase/migrations/0002_delivery_areas.sql`.
+- Pure logic + tests: `lib/delivery.ts`. Weather: `lib/weather.ts`. Schema: `supabase/migrations/0002_delivery_areas.sql` + `0003_delivery_discount.sql`.
 
 ### VAT
 - Menu prices are **VAT-inclusive** — never add 20% on top.

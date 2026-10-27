@@ -10,11 +10,6 @@ export const site = {
     display: "+44 7932 541874",
     href: "https://wa.me/447932541874",
   },
-  /** Where customers outside our delivery areas are sent to arrange delivery. */
-  deliveryWhatsapp: {
-    display: "+44 7532 716848",
-    href: "https://wa.me/447532716848",
-  },
   instagram: {
     handle: "@ofadamanchester",
     href: "https://www.instagram.com/ofadamanchester/",

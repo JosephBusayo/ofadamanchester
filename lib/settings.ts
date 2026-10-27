@@ -44,7 +44,7 @@ export const DEFAULT_SETTINGS: ShopSettings = {
   daysAhead: 7,
   // TODO(client): starter list — the owner edits it in /admin/settings.
   deliveryAreas: STARTER_DISTRICTS.map((district) => ({ district, feePence: null })),
-  deliveryPricing: { basePence: 400, baseKm: 3, perKmPence: 100 },
+  deliveryPricing: { basePence: 450, baseKm: 3, perKmPence: 100, farKm: 8, farDiscountPercent: 5 },
   deliverySurcharges: { nightPence: 100, nightFrom: "19:00", rainPence: 100 },
   deliveryPaused: false,
   deliveryPausedMessage: DEFAULT_DELIVERY_PAUSED_MESSAGE,
@@ -100,9 +100,11 @@ export function deliveryFromRow(row: Record<string, unknown>) {
   return {
     deliveryAreas: areas.map((a) => ({ district: a.district, feePence: a.fee_pence ?? null })),
     deliveryPricing: {
-      basePence: Number(row.delivery_base_pence ?? 400),
+      basePence: Number(row.delivery_base_pence ?? 450),
       baseKm: Number(row.delivery_base_km ?? 3),
       perKmPence: Number(row.delivery_per_km_pence ?? 100),
+      farKm: Number(row.delivery_far_km ?? 8),
+      farDiscountPercent: Number(row.delivery_far_discount_percent ?? 0),
     },
     deliverySurcharges: {
       nightPence: Number(row.night_surcharge_pence ?? 0),

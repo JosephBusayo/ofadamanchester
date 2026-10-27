@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
   distanceFeePence,
+  farDiscountPence,
   haversineKm,
   isNight,
   normaliseDistrict,
@@ -12,7 +13,7 @@ import {
   type DeliveryArea,
 } from "./delivery.ts";
 
-const pricing = { basePence: 400, baseKm: 3, perKmPence: 100 };
+const pricing = { basePence: 450, baseKm: 3, perKmPence: 100, farKm: 8, farDiscountPercent: 5 };
 const surcharges = { nightPence: 100, nightFrom: "19:00", rainPence: 150 };
 const areas: DeliveryArea[] = [
   { district: "M14", feePence: null },
@@ -37,15 +38,15 @@ describe("distance", () => {
 });
 
 describe("distance price", () => {
-  it("£4 minimum covers the first 3 km", () => {
-    assert.equal(distanceFeePence(0.5, pricing), 400);
-    assert.equal(distanceFeePence(3, pricing), 400);
+  it("£4.50 minimum covers the first 3 km", () => {
+    assert.equal(distanceFeePence(0.5, pricing), 450);
+    assert.equal(distanceFeePence(3, pricing), 450);
   });
 
   it("adds per km after that, rounded up to 50p", () => {
-    assert.equal(distanceFeePence(3.2, pricing), 450); // £4.20 → £4.50
-    assert.equal(distanceFeePence(5, pricing), 600); // £6.00 exactly
-    assert.equal(distanceFeePence(7.6, pricing), 900); // £8.60 → £9.00
+    assert.equal(distanceFeePence(3.2, pricing), 500); // £4.70 → £5.00
+    assert.equal(distanceFeePence(5, pricing), 650); // £6.50 exactly
+    assert.equal(distanceFeePence(7.6, pricing), 950); // £9.10 → £9.50
   });
 });
 
@@ -54,7 +55,7 @@ describe("delivery quote", () => {
   const quote = (postcode: string, extra = {}) => quoteDelivery({ ...base, postcode, ...extra });
 
   it("listed district without a fixed price → distance price", () => {
-    assert.deepEqual(quote("M14 5RG"), { ok: true, distanceKm: 5, feePence: 600, breakdown: [{ label: "Delivery", pence: 600 }] });
+    assert.deepEqual(quote("M14 5RG"), { ok: true, distanceKm: 5, feePence: 650, breakdown: [{ label: "Delivery", pence: 650 }] });
   });
 
   it("fixed price is used", () => {
@@ -106,6 +107,43 @@ describe("delivery quote", () => {
     assert.equal(quote("M14 5RG", { subtotalPence: 1000, minOrderPence: 1000 }).ok, true);
   });
 });
+
+describe("long-distance discount", () => {
+  it("none up to farKm", () => {
+    assert.equal(farDiscountPence(950, 8, pricing), 0);
+    const q = quote8("M14 5RG", 8);
+    assert.ok(q.ok);
+    assert.equal(q.breakdown.length, 1);
+  });
+
+  it("5% off beyond farKm, rounded to 5p, shown as its own line", () => {
+    // 12 km → £4.50 + 9 × £1 = £13.50; 5% = 67.5p → 70p
+    const q = quote8("M14 5RG", 12);
+    assert.ok(q.ok);
+    assert.deepEqual(q.breakdown, [
+      { label: "Delivery", pence: 1350 },
+      { label: "Long-distance discount (5%)", pence: -70 },
+    ]);
+    assert.equal(q.feePence, 1280);
+  });
+
+  it("applies to fixed-price areas too, but never below the £4.50 minimum", () => {
+    assert.equal(farDiscountPence(460, 20, pricing), 10);
+    assert.equal(farDiscountPence(450, 20, pricing), 0);
+  });
+
+  it("0% = off", () => assert.equal(farDiscountPence(2000, 30, { ...pricing, farDiscountPercent: 0 }), 0));
+
+  it("surcharges are not discounted", () => {
+    const q = quote8("M14 5RG", 12, { slotTime: "20:00", raining: true });
+    assert.ok(q.ok);
+    assert.equal(q.feePence, 1280 + 100 + 150);
+  });
+});
+
+function quote8(postcode: string, distanceKm: number, extra = {}) {
+  return quoteDelivery({ postcode, distanceKm, areas, pricing, surcharges, slotTime: "13:00", raining: false, ...extra });
+}
 
 describe("districts and night", () => {
   it("district from postcode", () => {

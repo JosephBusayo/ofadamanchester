@@ -258,8 +258,8 @@ export function CheckoutForm({
                       {quote.whatsapp && (
                         <>
                           {" "}
-                          <a className="underline" href={site.deliveryWhatsapp.href} target="_blank" rel="noopener noreferrer">
-                            {copy.deliveryWhatsapp} {site.deliveryWhatsapp.display}
+                          <a className="underline" href={site.whatsapp.href} target="_blank" rel="noopener noreferrer">
+                            {copy.deliveryWhatsapp} {site.whatsapp.display}
                           </a>
                         </>
                       )}

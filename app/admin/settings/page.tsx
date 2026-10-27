@@ -4,7 +4,7 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { SettingsForm } from "@/components/admin/SettingsForm";
 import { TestNotifications } from "@/components/admin/TestNotifications";
 import { requireAdmin } from "@/lib/admin/auth";
-import { distanceFeePence, roadDistanceKm } from "@/lib/delivery";
+import { distanceFeePence, farDiscountPence, roadDistanceKm, type DeliveryPricing } from "@/lib/delivery";
 import { getKitchenLocation, lookupDistrict } from "@/lib/postcodes";
 import { DEFAULT_SETTINGS, deliveryFromRow } from "@/lib/settings";
 import type { OpeningHours } from "@/lib/schedule";
@@ -59,7 +59,7 @@ async function Settings() {
 /** The distance price for each area (measured to the area's centre), so the owner can see what "auto" means. */
 async function autoPrices(
   districts: string[],
-  pricing: { basePence: number; baseKm: number; perKmPence: number },
+  pricing: DeliveryPricing,
 ): Promise<Record<string, { km: number; pence: number } | null>> {
   try {
     const kitchen = await getKitchenLocation();
@@ -68,7 +68,8 @@ async function autoPrices(
         const centre = await lookupDistrict(d).catch(() => null);
         if (!centre) return [d, null] as const;
         const km = roadDistanceKm(kitchen, centre);
-        return [d, { km, pence: distanceFeePence(km, pricing) }] as const;
+        const fee = distanceFeePence(km, pricing);
+        return [d, { km, pence: fee - farDiscountPence(fee, km, pricing) }] as const;
       }),
     );
     return Object.fromEntries(entries);

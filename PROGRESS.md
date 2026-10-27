@@ -44,10 +44,11 @@ Build order lives in `CLAUDE.md`. Phases **1–8 are done**. Phase **9** (securi
 **Removed** (client decision, 27 Oct): footer newsletter form; food hygiene badge (never built, dropped from spec)
 
 **Delivery by postcode area** (27 Oct, branch `delivery-by-postcode`)
-- Delivery only to postcode districts listed in /admin/settings; others → WhatsApp +44 7532 716848
-- Auto price £4 for first 3 km + £1/km, rounded up to 50p; or a fixed price per area
+- Delivery only to postcode districts listed in /admin/settings; others → WhatsApp +44 7932 541874
+- Auto price £4.50 (minimum) for first 3 km + £1/km, rounded up to 50p; or a fixed price per area
+- 5% long-distance discount beyond 8 km only (never below £4.50)
 - Evening (+£1 from 19:00) and rain (+£1, Open-Meteo forecast) surcharges; pause-delivery-only switch
-- **Before merging: run `supabase/migrations/0002_delivery_areas.sql` in the Supabase SQL editor**
+- **Before merging: run `supabase/migrations/0002_delivery_areas.sql` then `0003_delivery_discount.sql` in the Supabase SQL editor**
 
 **Admin**
 - Supabase Auth + TOTP 2FA + `ADMIN_EMAIL` allow-list + RLS `is_admin()`

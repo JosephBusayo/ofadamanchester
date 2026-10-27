@@ -40,6 +40,8 @@ const settingsSchema = z.object({
     basePence: z.number().int().min(0).max(5000),
     baseKm: z.number().min(0).max(50),
     perKmPence: z.number().int().min(0).max(1000),
+    farKm: z.number().min(0).max(100),
+    farDiscountPercent: z.number().int().min(0).max(50),
   }),
   deliverySurcharges: z.object({
     nightPence: z.number().int().min(0).max(2000),
@@ -71,6 +73,8 @@ export async function saveSettingsAction(input: SettingsInput): Promise<SaveResu
       delivery_base_pence: s.deliveryPricing.basePence,
       delivery_base_km: s.deliveryPricing.baseKm,
       delivery_per_km_pence: s.deliveryPricing.perKmPence,
+      delivery_far_km: s.deliveryPricing.farKm,
+      delivery_far_discount_percent: s.deliveryPricing.farDiscountPercent,
       night_surcharge_pence: s.deliverySurcharges.nightPence,
       night_from: s.deliverySurcharges.nightFrom,
       rain_surcharge_pence: s.deliverySurcharges.rainPence,

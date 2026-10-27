@@ -21,8 +21,17 @@ export function roadDistanceKm(kitchen: LatLng, customer: LatLng): number {
   return Math.round(haversineKm(kitchen, customer) * ROAD_FACTOR * 100) / 100;
 }
 
-/** How the automatic fee is worked out: a base fee covers the first `baseKm`, then `perKmPence` per extra km. */
-export type DeliveryPricing = { basePence: number; baseKm: number; perKmPence: number };
+/**
+ * How the fee is worked out: a base fee (also the minimum) covers the first `baseKm`, then
+ * `perKmPence` per extra km. Deliveries further than `farKm` get `farDiscountPercent` off.
+ */
+export type DeliveryPricing = {
+  basePence: number;
+  baseKm: number;
+  perKmPence: number;
+  farKm: number;
+  farDiscountPercent: number;
+};
 
 /** A postcode district we deliver to, e.g. "M14". `feePence` set = fixed price; null = calculated from distance. */
 export type DeliveryArea = { district: string; feePence: number | null };
@@ -45,10 +54,20 @@ export type DeliveryQuote =
 export const ROUND_TO_PENCE = 50;
 
 /** The automatic distance-based price. */
-export function distanceFeePence(distanceKm: number, pricing: DeliveryPricing): number {
+export function distanceFeePence(distanceKm: number, pricing: Pick<DeliveryPricing, "basePence" | "baseKm" | "perKmPence">): number {
   const extraKm = Math.max(0, distanceKm - pricing.baseKm);
   const raw = pricing.basePence + extraKm * pricing.perKmPence;
   return Math.max(pricing.basePence, Math.ceil(raw / ROUND_TO_PENCE) * ROUND_TO_PENCE);
+}
+
+/**
+ * Discount for far-away deliveries (further than `farKm`). Never takes the fee below the
+ * base fee, which is the minimum delivery price. Rounded to the nearest 5p.
+ */
+export function farDiscountPence(feePence: number, distanceKm: number, pricing: DeliveryPricing): number {
+  if (pricing.farDiscountPercent <= 0 || distanceKm <= pricing.farKm) return 0;
+  const discount = Math.round((feePence * pricing.farDiscountPercent) / 100 / 5) * 5;
+  return Math.max(0, Math.min(discount, feePence - pricing.basePence));
 }
 
 /** "M14 5RG" → "M14". Expects a normalised postcode. */
@@ -92,9 +111,12 @@ export function quoteDelivery(args: {
   if (!area) return { ok: false, reason: "not_covered" };
   if (subtotalPence < minOrderPence) return { ok: false, reason: "below_minimum", minimumPence: minOrderPence };
 
-  const breakdown: FeeLine[] = [
-    { label: "Delivery", pence: area.feePence ?? distanceFeePence(distanceKm, args.pricing) },
-  ];
+  const deliveryPence = area.feePence ?? distanceFeePence(distanceKm, args.pricing);
+  const breakdown: FeeLine[] = [{ label: "Delivery", pence: deliveryPence }];
+  const discount = farDiscountPence(deliveryPence, distanceKm, args.pricing);
+  if (discount > 0) {
+    breakdown.push({ label: `Long-distance discount (${args.pricing.farDiscountPercent}%)`, pence: -discount });
+  }
   if (surcharges.nightPence > 0 && isNight(args.slotTime, surcharges.nightFrom)) {
     breakdown.push({ label: "Evening delivery", pence: surcharges.nightPence });
   }
