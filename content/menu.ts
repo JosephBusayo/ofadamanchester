@@ -5,8 +5,8 @@ export const menuPage = {
   eyebrow: "OUR MENU",
   title: "AUTHENTIC. FRESH. DELICIOUS.",
   banner: {
-    src: "/images/menu-banner-ofada-sauce.jpg",
-    alt: "Classic Ofada sauce with assorted meat",
+    src: "/images/menu-banner-ofada-plate.jpg",
+    alt: "Ofada rice on a leaf with ayamase sauce, a boiled egg and fried plantain",
   },
   // Short pill labels for the sticky filter (falls back to the category name).
   filterLabels: {

@@ -130,6 +130,7 @@ export const seedMenu: Menu = {
           categorySlug: "protein-add-ons",
           name: "Fried Turkey",
           pricePence: 250,
+          image: "/images/product-fried-turkey.jpg",
           isExtra: true,
         }),
         product({
@@ -145,6 +146,7 @@ export const seedMenu: Menu = {
           categorySlug: "protein-add-ons",
           name: "Snail",
           pricePence: 500,
+          image: "/images/product-snail.jpg",
           isExtra: true,
         }),
         product({
