@@ -1,5 +1,5 @@
 -- Client update (29 Oct 2026): each sauce size is its own menu item (own card, price, photo)
--- instead of one item with a size dropdown. HOT tag on the 5 Litres only. Safe to re-run.
+-- instead of one item with a size dropdown. HOT tag and its own photo on the 5 Litres only. Safe to re-run.
 
 -- 750ml keeps the existing slug; its size dropdown goes (options cascade).
 delete from public.option_groups
@@ -15,7 +15,8 @@ set name = 'Classic Ofada Sauce 750ml',
 where slug = 'classic-sauce';
 
 insert into public.products (category_id, slug, name, description, price_pence, image_url, badge, sort)
-select c.id, v.slug, v.name, v.description, v.price_pence, '/images/product-sauce.jpg',
+select c.id, v.slug, v.name, v.description, v.price_pence,
+       case when v.slug = 'sauce-5l' then '/images/product-sauce-5l.jpg' else '/images/product-sauce.jpg' end,
        case when v.slug = 'sauce-5l' then 'HOT' end, v.sort
 from public.categories c
 cross join (values

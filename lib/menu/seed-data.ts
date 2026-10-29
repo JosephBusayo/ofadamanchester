@@ -110,7 +110,7 @@ export const seedMenu: Menu = {
             name: `Classic Ofada Sauce ${size}`,
             pricePence,
             badge: slug === "sauce-5l" ? "HOT" : null, // HOT tag on the 5 Litres only (client, 29 Oct)
-            image: "/images/product-sauce.jpg",
+            image: slug === "sauce-5l" ? "/images/product-sauce-5l.jpg" : "/images/product-sauce.jpg",
             description: `${size} of our classic Ofada sauce with diced assorted. Rice and extra protein not included.`,
           }),
         ),
