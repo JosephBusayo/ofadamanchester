@@ -164,7 +164,7 @@ Required choice: `1 Turkey + 1 Beef` | `2 Turkey` | `2 Beef`.
 
 **Take the Sauce Home** (classic Ofada sauce with diced assorted; rice & extra protein not included)
 750ml £17 · 1 Litre £20 · 2 Litres £39 · 5 Litres £95 → **four separate products** (client, 29 Oct):
-`classic-sauce` (750ml), `sauce-1l`, `sauce-2l`, `sauce-5l`, same photo. Live DB: `0007_sauce_sizes_as_items.sql`.
+`classic-sauce` (750ml), `sauce-1l`, `sauce-2l`, `sauce-5l`, same photo; HOT tag on 5 Litres only. Live DB: `0007_sauce_sizes_as_items.sql`.
 
 **Protein add-ons** — can be added to any meal *or* bought alone
 Fried Turkey £2.50 · Fried Fish £2.50 · Snail £5.00 ·

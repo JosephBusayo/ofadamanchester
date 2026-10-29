@@ -109,7 +109,7 @@ export const seedMenu: Menu = {
             categorySlug: "sauce",
             name: `Classic Ofada Sauce ${size}`,
             pricePence,
-            badge: "HOT",
+            badge: slug === "sauce-5l" ? "HOT" : null, // HOT tag on the 5 Litres only (client, 29 Oct)
             image: "/images/product-sauce.jpg",
             description: `${size} of our classic Ofada sauce with diced assorted. Rice and extra protein not included.`,
           }),
