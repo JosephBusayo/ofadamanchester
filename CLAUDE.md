@@ -163,7 +163,8 @@ Required choice: `1 Turkey + 1 Beef` | `2 Turkey` | `2 Beef`.
 | Ofadà Large Pack | 4 wraps + large sauce + 2 eggs | £26.00 |
 
 **Take the Sauce Home** (classic Ofada sauce with diced assorted; rice & extra protein not included)
-750ml £17 · 1 Litre £20 · 2 Litres £39 · 5 Litres £95 → one product, required size option.
+750ml £17 · 1 Litre £20 · 2 Litres £39 · 5 Litres £95 → **four separate products** (client, 29 Oct):
+`classic-sauce` (750ml), `sauce-1l`, `sauce-2l`, `sauce-5l`, same photo. Live DB: `0007_sauce_sizes_as_items.sql`.
 
 **Protein add-ons** — can be added to any meal *or* bought alone
 Fried Turkey £2.50 · Fried Fish £2.50 · Snail £5.00 ·
@@ -290,6 +291,8 @@ The owner isn't on Uber Eats/Direct, so no courier API. Instead:
 - **Twilio WhatsApp** to `OWNER_WHATSAPP` (+447932541874). Business-initiated messages
   need an **approved WhatsApp template** (e.g. "New order {{1}} – {{2}} – £{{3}} – {{4}}").
   Use the Twilio sandbox during development. If WhatsApp fails, still send email and log the error.
+- **Free alternative (client asked, 29 Oct): CallMeBot** — set `CALLMEBOT_APIKEY` (no Twilio vars) and
+  alerts go free to `OWNER_WHATSAPP` as full free text. Unofficial personal-use service: keep email on as backup.
 
 ---
 
@@ -310,6 +313,7 @@ TWILIO_ACCOUNT_SID=
 TWILIO_AUTH_TOKEN=
 TWILIO_WHATSAPP_FROM=
 TWILIO_WHATSAPP_TEMPLATE_SID=
+CALLMEBOT_APIKEY=
 OWNER_WHATSAPP=+447932541874
 UPSTASH_REDIS_REST_URL=
 UPSTASH_REDIS_REST_TOKEN=

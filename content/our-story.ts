@@ -36,7 +36,7 @@ export const storyChapters: StoryChapter[] = [
       "When I moved to the UK, I deeply missed the taste of home. I couldn’t find authentic Ofada sauce the way we enjoy it back in Nigeria: rich, smoky and deeply flavoured.",
     ],
     layout: "a",
-    images: [{ src: "/images/story-rice-wrap.jpg", alt: "Ofada rice wrapped in leaf" }],
+    images: [], // photo removed (client, 29 Oct)
   },
   {
     title: "THE DAY\nEVERYTHING\nCHANGED",

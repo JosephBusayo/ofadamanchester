@@ -15,7 +15,7 @@ export type ChannelResult = {
 const SKIP_REASONS: Record<ChannelResult["channel"], string> = {
   "customer email": "RESEND_API_KEY or EMAIL_FROM not set",
   "owner email": "RESEND_API_KEY, EMAIL_FROM or OWNER_EMAIL not set",
-  "owner WhatsApp": "TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_WHATSAPP_FROM or OWNER_WHATSAPP not set",
+  "owner WhatsApp": "OWNER_WHATSAPP not set, or neither CALLMEBOT_APIKEY nor the TWILIO_* variables are set",
 };
 
 /**

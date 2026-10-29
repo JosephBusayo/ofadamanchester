@@ -35,14 +35,14 @@ export default async function MenuPage() {
       </section>
 
       <div className="mt-10 px-8">
-        <div className="relative h-80 overflow-hidden rounded-2xl">
+        <div className="relative h-80 overflow-hidden rounded-2xl bg-primary-dark tablet:h-[440px]">
           <Image
             src={menuPage.banner.src}
             alt={menuPage.banner.alt}
             fill
             priority
-            sizes="100vw"
-            className="object-cover"
+            sizes="(min-width: 810px) 440px, 100vw"
+            className="object-contain"
             unoptimized={menuPage.banner.src.endsWith(".svg")}
           />
         </div>

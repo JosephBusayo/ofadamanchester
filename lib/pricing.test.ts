@@ -48,11 +48,12 @@ describe("menu prices match the printed menu", () => {
     it(`${slug} = ${formatPence(pence)}`, () => assert.equal(product(slug).pricePence, pence));
   }
 
-  it("sauce sizes are £17 / £20 / £39 / £95", () => {
+  it("sauce sizes are separate items: £17 / £20 / £39 / £95", () => {
     const cart = priceCart(
-      ["750ml", "1l", "2l", "5l"].map((size) => line("classic-sauce", { optionSlugs: { size } })),
+      ["classic-sauce", "sauce-1l", "sauce-2l", "sauce-5l"].map((slug) => line(slug)),
       seedMenu,
     );
+    assert.equal(cart.issues.length, 0);
     assert.deepEqual(
       cart.lines.map((l) => l.totalPence),
       [1700, 2000, 3900, 9500],
@@ -76,21 +77,24 @@ describe("options", () => {
   });
 
   it("rejects an option that doesn't exist", () => {
-    const cart = priceCart([line("classic-sauce", { optionSlugs: { size: "10l" } })], seedMenu);
+    const cart = priceCart([line("ofada-box", { optionSlugs: { proteins: "3-goat" } })], seedMenu);
     assert.deepEqual(cart.issues.map((i) => i.code), ["invalid_option"]);
   });
 
   it("rejects an unknown option group", () => {
     const cart = priceCart(
-      [line("classic-sauce", { optionSlugs: { size: "1l", colour: "red" } })],
+      [line("ofada-box", { optionSlugs: { proteins: "2-beef", colour: "red" } })],
       seedMenu,
     );
     assert.deepEqual(cart.issues.map((i) => i.code), ["invalid_option"]);
   });
 
   it("'from' price is the cheapest required option", () => {
-    assert.deepEqual(fromPrice(product("classic-sauce")), { pence: 1700, isFrom: true });
+    const withSizes = { ...product("regular-pack"), optionGroups: [{ slug: "size", name: "Size", required: true, min: 1, max: 1,
+      options: [{ slug: "s", name: "S", priceDeltaPence: 0 }, { slug: "l", name: "L", priceDeltaPence: 500 }] }] };
+    assert.deepEqual(fromPrice(withSizes), { pence: 1500, isFrom: true });
     assert.deepEqual(fromPrice(product("ofada-box")), { pence: 2600, isFrom: false });
+    assert.deepEqual(fromPrice(product("classic-sauce")), { pence: 1700, isFrom: false });
   });
 });
 
@@ -197,7 +201,7 @@ describe("cart validation", () => {
     const cart = priceCart(
       [
         line("ofada-box", { optionSlugs: { proteins: "2-beef" }, extras: { "fried-turkey": 1, "boiled-egg": 4 }, qty: 2 }),
-        line("classic-sauce", { optionSlugs: { size: "1l" } }),
+        line("sauce-1l"),
         line("fried-plantain", { qty: 3 }),
       ],
       seedMenu,

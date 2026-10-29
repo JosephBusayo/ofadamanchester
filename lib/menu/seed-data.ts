@@ -95,30 +95,25 @@ export const seedMenu: Menu = {
       slug: "sauce",
       name: "TAKE THE SAUCE HOME",
       products: [
-        product({
-          slug: "classic-sauce",
-          categorySlug: "sauce",
-          name: "Classic Ofada Sauce",
-          pricePence: 1700,
-          badge: "HOT",
-          image: "/images/product-sauce.jpg",
-          description: "Our classic Ofada sauce with diced assorted. Rice and extra protein not included.",
-          optionGroups: [
-            {
-              slug: "size",
-              name: "Choose a size",
-              required: true,
-              min: 1,
-              max: 1,
-              options: [
-                { slug: "750ml", name: "750ml", priceDeltaPence: 0 },
-                { slug: "1l", name: "1 Litre", priceDeltaPence: 300 },
-                { slug: "2l", name: "2 Litres", priceDeltaPence: 2200 },
-                { slug: "5l", name: "5 Litres", priceDeltaPence: 7800 },
-              ],
-            },
-          ],
-        }),
+        // One card per size (client, 29 Oct): same photo, own price. "classic-sauce" stays the 750ml slug.
+        ...(
+          [
+            ["classic-sauce", "750ml", 1700],
+            ["sauce-1l", "1 Litre", 2000],
+            ["sauce-2l", "2 Litres", 3900],
+            ["sauce-5l", "5 Litres", 9500],
+          ] as const
+        ).map(([slug, size, pricePence]) =>
+          product({
+            slug,
+            categorySlug: "sauce",
+            name: `Classic Ofada Sauce ${size}`,
+            pricePence,
+            badge: "HOT",
+            image: "/images/product-sauce.jpg",
+            description: `${size} of our classic Ofada sauce with diced assorted. Rice and extra protein not included.`,
+          }),
+        ),
       ],
     },
     {

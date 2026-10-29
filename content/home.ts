@@ -71,7 +71,7 @@ export const bestsellers = {
   title: "OUR BESTSELLERS",
   cta: { label: "VIEW FULL MENU", href: "/menu" },
   // Product slugs from the menu — names, prices, images and badges come from the menu data.
-  productSlugs: ["ofada-box", "regular-pack", "large-pack", "classic-sauce"],
+  productSlugs: ["ofada-box", "regular-pack", "large-pack", "sauce-1l"],
 };
 
 export const storyMenuCards = [

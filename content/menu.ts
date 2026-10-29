@@ -6,7 +6,8 @@ export const menuPage = {
   title: "AUTHENTIC. FRESH. DELICIOUS.",
   preorderNote: (notice: string) => `PRE-ORDER ONLY · ORDER AT LEAST ${notice.toUpperCase()} AHEAD`,
   banner: {
-    src: "/images/menu-banner-moimoi-plate.jpg",
+    // Same sharp photo as the home polaroid, shown whole (no stretched/blurred filler).
+    src: "/images/polaroid-ofada-plate.jpg",
     alt: "Ofada rice with moimoi and classic sauce with assorted meat and a boiled egg, on a black plate",
   },
   // Short pill labels for the sticky filter (falls back to the category name).

@@ -48,13 +48,15 @@ function Chapter({ chapter }: { chapter: StoryChapter }) {
           <p key={p}>{p}</p>
         ))}
       </div>
-      <div className={`${styles.media} ${MEDIA_CLASS[chapter.layout]}`}>
-        {chapter.images.map((img) => (
-          <div key={img.src} className={styles.ph}>
-            <Image src={img.src} alt={img.alt} fill sizes="(min-width: 760px) 33vw, 100vw" unoptimized={img.src.endsWith(".svg")} />
-          </div>
-        ))}
-      </div>
+      {chapter.images.length > 0 && (
+        <div className={`${styles.media} ${MEDIA_CLASS[chapter.layout]}`}>
+          {chapter.images.map((img) => (
+            <div key={img.src} className={styles.ph}>
+              <Image src={img.src} alt={img.alt} fill sizes="(min-width: 760px) 33vw, 100vw" unoptimized={img.src.endsWith(".svg")} />
+            </div>
+          ))}
+        </div>
+      )}
     </article>
   );
 }
