@@ -23,13 +23,13 @@ export type ShopSettings = ScheduleSettings & {
 // TODO(client): placeholders until the owner confirms hours, fees and the pickup address.
 // Once Supabase is connected these come from the `settings` row (editable in /admin).
 const DEFAULT_HOURS: OpeningHours = {
-  "0": [{ open: "12:00", close: "20:00" }],
-  "1": [{ open: "12:00", close: "20:00" }],
-  "2": [{ open: "12:00", close: "20:00" }],
-  "3": [{ open: "12:00", close: "20:00" }],
-  "4": [{ open: "12:00", close: "20:00" }],
-  "5": [{ open: "12:00", close: "20:00" }],
-  "6": [{ open: "12:00", close: "20:00" }],
+  "0": [{ open: "12:00", close: "18:00" }],
+  "1": [{ open: "12:00", close: "18:00" }],
+  "2": [{ open: "12:00", close: "18:00" }],
+  "3": [{ open: "12:00", close: "18:00" }],
+  "4": [{ open: "12:00", close: "18:00" }],
+  "5": [{ open: "12:00", close: "18:00" }],
+  "6": [{ open: "12:00", close: "18:00" }],
 };
 
 /** Central Manchester + nearby Salford districts (M10 doesn't exist). Same list as the 0002 migration. */

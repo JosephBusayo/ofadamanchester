@@ -65,7 +65,6 @@ export const receipt = {
   // TODO(client): approve body copy
   body: "At Ofada Manchester, we believe great food brings people together. Ofada rice wrapped in leaf, our classic sauce, proper portions and a whole lot of love.",
   cta: { label: "OUR STORY", href: "/our-story" },
-  reprintLabel: "PRINT AGAIN",
 };
 
 export const bestsellers = {

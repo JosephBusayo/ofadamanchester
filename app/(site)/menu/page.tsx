@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { MenuFilter } from "@/components/menu/MenuFilter";
 import { ProductCard } from "@/components/ProductCard";
+import { availabilityNote } from "@/lib/menu/availability";
 import { bulkOrders, menuPage, productGalleries } from "@/content/menu";
 import { site } from "@/content/site";
 import { MENU_SCROLL_OFFSET } from "@/lib/menu/constants";
@@ -76,6 +77,7 @@ export default async function MenuPage() {
                     price={`${price.isFrom ? "From " : ""}${formatPence(price.pence)}`}
                     image={p.image}
                     gallery={productGalleries[p.slug]}
+                    note={availabilityNote(p.availableDays)}
                     badge={p.badge}
                     soldOut={p.soldOut}
                   />

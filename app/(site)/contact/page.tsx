@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { contactPage } from "@/content/contact";
 import { site } from "@/content/site";
 import { formatOpeningHours } from "@/lib/schedule";
@@ -61,18 +60,6 @@ export default async function ContactPage() {
         </div>
       </section>
 
-      <section className="px-8 pb-8">
-        <div className="relative h-[460px] overflow-hidden rounded-2xl bg-bg-alt">
-          <Image
-            src={contactPage.image.src}
-            alt={contactPage.image.alt}
-            fill
-            sizes="100vw"
-            className="object-cover"
-            unoptimized={contactPage.image.src.endsWith(".svg")}
-          />
-        </div>
-      </section>
 
       <section className="px-8 pb-20 [container-type:inline-size]">
         <div className="flex flex-col items-start gap-8 rounded-3xl bg-primary px-6 py-10 text-on-primary tablet:flex-row tablet:items-center tablet:justify-between tablet:px-16 tablet:py-14">

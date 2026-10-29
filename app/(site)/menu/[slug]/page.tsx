@@ -7,6 +7,7 @@ import styles from "@/components/menu/ItemDetail.module.css";
 import { OrderPanel } from "@/components/menu/OrderPanel";
 import { ImageCarousel } from "@/components/ImageCarousel";
 import { ProductCard } from "@/components/ProductCard";
+import { availabilityNote } from "@/lib/menu/availability";
 import { itemPage, menuPage, productGalleries } from "@/content/menu";
 import { UK_ALLERGENS, allergenNames } from "@/lib/menu/allergens";
 import { getExtras, getMenu, getProduct } from "@/lib/menu/get-menu";
@@ -145,6 +146,7 @@ async function Item({ params }: PageProps<"/menu/[slug]">) {
                   price={`${pp.isFrom ? "From " : ""}${formatPence(pp.pence)}`}
                   image={p.image}
                   gallery={productGalleries[p.slug]}
+                  note={availabilityNote(p.availableDays)}
                   badge={p.badge}
                   soldOut={p.soldOut}
                 />

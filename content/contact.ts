@@ -10,7 +10,6 @@ export const contactPage = {
     hours: "OPENING HOURS",
     hello: "SAY HELLO",
   },
-  image: { src: "/images/contact-banner-friends-eating.jpg", alt: "Friends sharing a meal at the table" },
   // TODO(client): confirm they take party / catering orders
   cta: {
     kicker: "PARTY ORDERS",

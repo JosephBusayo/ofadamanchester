@@ -134,7 +134,7 @@ export function SettingsForm({ initial, autoPrices }: { initial: SettingsInput; 
                     type="button"
                     className={styles.signOut}
                     style={{ alignSelf: "flex-start" }}
-                    onClick={() => setDay(key, [...periods, { open: "12:00", close: "20:00" }])}
+                    onClick={() => setDay(key, [...periods, { open: "12:00", close: "18:00" }])}
                   >
                     + Add hours
                   </button>

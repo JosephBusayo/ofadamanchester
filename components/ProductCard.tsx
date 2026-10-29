@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { cardLabels } from "@/content/menu";
 import { ImageCarousel } from "./ImageCarousel";
 
 const FALLBACK_IMAGE = "/placeholders/product.svg";
@@ -13,6 +14,7 @@ export function ProductCard({
   badge,
   soldOut = false,
   gallery,
+  note,
 }: {
   href: string;
   name: string;
@@ -22,6 +24,8 @@ export function ProductCard({
   soldOut?: boolean;
   /** Two or more photos → auto-playing carousel instead of `image`. */
   gallery?: { src: string; alt: string }[];
+  /** Short availability note shown after the price, e.g. "Saturdays only". */
+  note?: string | null;
 }) {
   const src = image ?? FALLBACK_IMAGE;
   return (
@@ -38,8 +42,16 @@ export function ProductCard({
       </div>
       <div className="flex w-full flex-col items-center gap-3 text-center">
         <h3 className="text-base font-bold leading-[1.15] text-ink">{name}</h3>
-        <p className="text-sm font-bold leading-[1.1] text-highlight">{soldOut ? "SOLD OUT" : price}</p>
+        <p className="text-sm font-bold leading-[1.1] text-highlight">
+          {soldOut ? cardLabels.outOfStock : price}
+          {!soldOut && note && <span className="text-ink"> · {note}</span>}
+        </p>
       </div>
+      {soldOut && (
+        <span className="absolute right-3.5 top-3.5 flex h-[42px] items-center rounded-full bg-ink px-4 text-sm font-bold leading-none text-on-primary">
+          {cardLabels.outOfStock}
+        </span>
+      )}
       {badge && (
         <span className="absolute left-3.5 top-3.5 flex h-[42px] min-w-[42px] items-center justify-center rounded-full bg-primary px-3 text-sm font-bold leading-[1.2] text-on-primary">
           {badge}

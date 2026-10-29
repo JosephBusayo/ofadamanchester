@@ -19,7 +19,7 @@ async function send(
   idempotencyKey: string,
 ): Promise<"sent" | "skipped"> {
   const r = resend();
-  const from = process.env.EMAIL_FROM; // e.g. "Ofada Manchester <orders@yourdomain.co.uk>"
+  const from = process.env.EMAIL_FROM; // e.g. "Ofada Manchester <orders@ofadamanchester.com>"
   if (!r || !from) return "skipped";
   // Idempotency key: if Stripe retries the webhook, Resend won't send a duplicate.
   const { error } = await r.emails.send({ from, ...payload }, { idempotencyKey });

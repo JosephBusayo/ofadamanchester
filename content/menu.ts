@@ -6,8 +6,8 @@ export const menuPage = {
   title: "AUTHENTIC. FRESH. DELICIOUS.",
   preorderNote: (notice: string) => `PRE-ORDER ONLY · ORDER AT LEAST ${notice.toUpperCase()} AHEAD`,
   banner: {
-    src: "/images/menu-banner-ofada-plate.jpg",
-    alt: "Ofada rice on a leaf with ayamase sauce, a boiled egg and fried plantain",
+    src: "/images/menu-banner-moimoi-plate.jpg",
+    alt: "Ofada rice with moimoi and classic sauce with assorted meat and a boiled egg, on a black plate",
   },
   // Short pill labels for the sticky filter (falls back to the category name).
   filterLabels: {
@@ -44,11 +44,17 @@ export const bulkOrders = {
   whatsappMessage: "Hi Ofada Manchester! I'd like to place a bulk order. Date: … Number of people: … Pickup or delivery: …",
 };
 
+/** Small labels on menu cards. */
+export const cardLabels = {
+  outOfStock: "OUT OF STOCK",
+  saturdaysOnly: "Saturdays only",
+};
+
 export const itemPage = {
   back: "Back to menu",
   addToCart: "ADD TO CART",
   added: "ADDED ✓",
-  soldOut: "SOLD OUT",
+  soldOut: "OUT OF STOCK",
   quantity: "Quantity",
   extrasTitle: "ADD EXTRAS",
   extrasSubtitle: "Add proteins to your meal",

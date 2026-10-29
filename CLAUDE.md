@@ -55,7 +55,7 @@ orders in a private admin area.
 - **Our Story `/our-story`** — `ourstory-hero-*` (wide image with title overlay),
   `ourstory-part1-*` (mobile: topview + bottomview), `ourstory-part2-*` (mobile: topview + bottomview)
 - **Contact `/contact`** — `contact-hero-*` (mobile: topview + bottomview),
-  `contact-imagesection-*`, `contact-cta-*`
+  `contact-cta-*`. (`contact-imagesection-*` removed — client decision, 29 Oct.)
 - **No Framer design** for: item detail, cart drawer, checkout, order confirmation,
   allergen/legal pages, admin. Build these from the existing components, tokens and
   type scale so they look native to the site — no new visual language.
@@ -345,9 +345,9 @@ Commit a `.env.example` with these names and no values.
 
 ## Open Questions for the Client
 - Kitchen pickup address (postcode decided: M7 2BA, Salford); final delivery area list.
-- Opening days/hours, max orders per slot. (Notice decided: 24 hours.)
+- Max orders per slot. (Decided: 24 hours' notice; open 12:00–18:00 every day.)
 - VAT registered? (Yes/No)
 - Allergens for every item (sauce, MoiMoi, fried fish, etc.).
-- Domain name and sending email address.
+- Sending email address (domain decided: ofadamanchester.com; contact email hello@ofadamanchester.com).
 - Confirm brown/tan colour hex codes, final logo, photos, Our Story copy.
 - Can protein add-ons be bought on their own, or only with a meal?

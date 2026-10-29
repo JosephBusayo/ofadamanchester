@@ -66,17 +66,6 @@ export function Receipt() {
     };
   }, []);
 
-  const reprint = () => {
-    const start = performance.now();
-    setPrinted(0);
-    const step = (t: number) => {
-      const p = Math.min(1, (t - start) / 1600);
-      setPrinted(1 - (1 - p) ** 3);
-      if (p < 1) requestAnimationFrame(step);
-    };
-    setTimeout(() => requestAnimationFrame(step), 250);
-  };
-
   const nextPhoto = () => {
     if (leaving !== null) return;
     setLeaving(order[0]);
@@ -213,9 +202,6 @@ export function Receipt() {
               <span>{receipt.cta.label}</span>
               <b aria-hidden>→</b>
             </Link>
-            <button type="button" className={`${styles.cta} ${styles.reprint}`} onClick={reprint}>
-              {receipt.reprintLabel}
-            </button>
           </div>
         </div>
       </div>

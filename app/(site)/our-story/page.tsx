@@ -15,12 +15,15 @@ export default function OurStoryPage() {
     <>
       <section className={styles.sb}>
         <div className={styles.sbBox}>
+          {/* Blurred copy fills the sides on wide screens; the sharp photo sits on top. */}
+          <Image src={storyBanner.image.src} alt="" aria-hidden fill sizes="40vw" className={styles.sbBlur} />
           <Image
             src={storyBanner.image.src}
             alt={storyBanner.image.alt}
             fill
             priority
-            sizes="100vw"
+            sizes="(min-width: 600px) 640px, 100vw"
+            className={styles.sbPhoto}
             unoptimized={storyBanner.image.src.endsWith(".svg")}
           />
           <h1 className={styles.sbLabel}>{storyBanner.title}</h1>

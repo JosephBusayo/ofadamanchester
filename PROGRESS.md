@@ -54,6 +54,18 @@ Build order lives in `CLAUDE.md`. Phases **1–8 are done**. Phase **9** (securi
 
 **Photos & bulk orders** (27 Oct): Ofada Box shows a closed → open photo carousel (3 s, `productGalleries` in `content/menu.ts`; add more products there). New mini/regular/large pack + turkey photos (resized to 1200 px). "Bulk orders" section + BULK pill at the end of the menu → WhatsApp with a prefilled message.
 
+**Client changes 29 Oct**
+- Our Story banner = founder photo (whole photo centred over a blurred copy on wide screens; full-bleed on phones)
+- Ofada Box carousel restarts from the closed box each time it scrolls into view (and only runs while visible)
+- Regular Pack photo recropped so the food is whole and near the centre
+- Menu hero = Ofada rice + moimoi plate (granite extended to a wide banner)
+- Contact page photo removed; "PRINT AGAIN" removed from the home receipt; email hello@ofadamanchester.com
+- Hours 12:00–18:00 every day (`0006_hours_12_to_6.sql`)
+- Menu cards show "· Saturdays only" for MoiMoi; out-of-stock items get an OUT OF STOCK tag
+- Admin → Menu: In stock / Out of stock buttons per item
+- WhatsApp alert template now includes items + phone/address — approved template text:
+  `New Ofada order {{1}}` / `Customer: {{2}}` / `Total: {{3}}` / `When: {{4}}` / `Items: {{5}}` / `Contact: {{6}}` / `Open the admin to start preparing.`
+
 **Admin**
 - Supabase Auth + TOTP 2FA + `ADMIN_EMAIL` allow-list + RLS `is_admin()`
 - Orders by day/status (30s refresh), status flow, order detail, resend confirmation, Stripe link

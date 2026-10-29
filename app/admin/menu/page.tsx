@@ -12,7 +12,9 @@ export default function AdminMenuPage() {
     <AdminShell>
       <h1 className={styles.title}>MENU</h1>
       <p className={styles.subtitle}>
-        Mark items sold out for the day, or hide them. Changes show on the shop straight away. Prices and new items are
+        Tap <strong>Out of stock</strong> when an item runs out — the menu shows an OUT OF STOCK tag and it can&apos;t be
+        ordered. Tap <strong>In stock</strong> to bring it back. &ldquo;On menu&rdquo; hides an item completely. Changes show on the shop
+        straight away. Prices and new items are
         changed in <code>lib/menu/seed-data.ts</code> then <code>npm run db:seed</code>.
       </p>
       <Suspense fallback={<p>Loading menu…</p>}>

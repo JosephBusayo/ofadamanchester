@@ -379,16 +379,6 @@
 .cta:hover b {
   transform: translateX(4px);
 }
-.reprint {
-  border-color: transparent;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  padding: 0 8px;
-}
-.reprint:hover {
-  background: transparent;
-  color: var(--highlight);
-}
 
 @media (prefers-reduced-motion: reduce) {
   .clip {

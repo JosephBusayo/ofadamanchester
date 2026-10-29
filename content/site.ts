@@ -16,7 +16,7 @@ export const site = {
   },
   // TODO(client): kitchen / pickup address and contact email
   address: ["MANCHESTER", "UNITED KINGDOM"],
-  email: "hello@ofadamanchester.co.uk",
+  email: "hello@ofadamanchester.com",
   // TODO(client): the legal trading name (sole trader name or Ltd company + number) for the legal pages.
   legalName: "Ofada Manchester",
   legalUpdated: "23 October 2026",

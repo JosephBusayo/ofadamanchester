@@ -3,7 +3,10 @@ import type { ManifestoContent } from "@/components/home/Manifesto";
 
 export const storyBanner = {
   title: "OUR STORY",
-  image: { src: "/images/story-banner-ofada-box.jpg", alt: "Ofada rice and fried plantain in an Ofada Box" },
+  image: {
+    src: "/images/story-banner-founder.jpg",
+    alt: "Bolade, founder of Ofada Manchester, in denim dungarees and a cream Ofada top, holding a stack of Ofada bowls",
+  },
 };
 
 export const storyManifesto: ManifestoContent = {

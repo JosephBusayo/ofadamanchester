@@ -5,7 +5,8 @@
   width: 100%;
   padding: 0 16px;
   container-type: inline-size;
-  --h: 260px;
+  /* Taller than the Framer strip so the founder photo shows her face to waist. */
+  --h: clamp(380px, 46cqw, 620px);
 }
 .sbBox {
   position: relative;
@@ -15,25 +16,44 @@
 }
 .sbBox img {
   object-fit: cover;
-  object-position: 50% 35%;
+  object-position: 50% 26%;
   transform: scale(1.04);
   animation: sbIn 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+/* Wide screens: the portrait photo is shown whole, centred, over a blurred copy of itself. */
+.sbBox img.sbBlur {
+  filter: blur(28px) brightness(0.85);
+  transform: scale(1.2);
+  animation: none;
+}
+.sbBox img.sbPhoto {
+  object-fit: contain;
+}
+/* Phones: the photo fills the banner (blurred copy hidden). */
+@container (max-width: 600px) {
+  .sbBox img.sbBlur {
+    display: none;
+  }
+  .sbBox img.sbPhoto {
+    object-fit: cover;
+  }
 }
 .sbBox::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.25);
+  /* Darken the bottom only, where the title sits, so her face stays bright. */
+  background: linear-gradient(to bottom, transparent 45%, rgba(0, 0, 0, 0.55));
 }
 .sbLabel {
   position: absolute;
   inset: 0;
   z-index: 1;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
   margin: 0;
-  padding: 0 20px;
+  padding: 0 20px clamp(20px, 4cqw, 48px);
   font-family: var(--font-display);
   font-weight: 400;
   font-size: clamp(40px, 6cqw, 96px);

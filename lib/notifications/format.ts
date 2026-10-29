@@ -24,15 +24,27 @@ function oneLine(s: string, max = 200): string {
 }
 
 /**
- * Variables for the approved WhatsApp template, e.g.
- * "New order {{1}} – {{2}} – {{3}} – {{4}}" → "#1042 – Ada Obi – £64.00 – Pickup · Sat 24 Oct, 18:30".
+ * Variables for the approved WhatsApp template (see PROGRESS.md for the exact text), e.g.
+ *   {{1}} #1042 · {{2}} Ada Obi · {{3}} £64.00 · {{4}} Pickup · Sat 24 Oct, 18:30
+ *   {{5}} 2× The Ofada Box (2 Beef, +Fried Turkey); 1× MoiMoi
+ *   {{6}} +447700900123 · 12 Example Road, Manchester, M14 5RG   (pickup: phone only)
+ * WhatsApp template variables must be one line, so everything is flattened.
  */
 export function whatsappTemplateVariables(order: OrderRecord): Record<string, string> {
+  const items = order.items
+    .map((i) => {
+      const details = itemDetails(i);
+      return `${i.qty}× ${i.name}${details ? ` (${details})` : ""}`;
+    })
+    .join("; ");
+  const address = addressLine(order);
   return {
     "1": `#${order.number}`,
     "2": oneLine(order.customerName, 80),
     "3": formatPence(order.totalPence),
     "4": oneLine(whenLine(order)),
+    "5": oneLine(items, 600) || "-",
+    "6": oneLine([order.phone, address].filter(Boolean).join(" · "), 200),
   };
 }
 

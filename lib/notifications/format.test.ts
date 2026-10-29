@@ -26,7 +26,12 @@ describe("notification formatting", () => {
 
   it("builds WhatsApp template variables on one line each", () => {
     const vars = whatsappTemplateVariables({ ...sampleOrder, customerName: "Ada\nObi" });
-    assert.deepEqual(vars, { "1": "#1042", "2": "Ada Obi", "3": "£89.00", "4": "Delivery · Sat 24 Oct, 18:30" });
+    assert.equal(vars["1"], "#1042");
+    assert.equal(vars["2"], "Ada Obi");
+    assert.equal(vars["3"], "£89.00");
+    assert.equal(vars["4"], "Delivery · Sat 24 Oct, 18:30");
+    assert.match(vars["5"], /^2× The Ofada Box \(2 Beef, \+Fried Turkey, \+4× Extra Boiled Egg\)/);
+    assert.equal(vars["6"], "+447700900123 · 12 Example Road, Flat 3, Manchester, M14 5RG");
     assert.ok(Object.values(vars).every((v) => !v.includes("\n")));
   });
 

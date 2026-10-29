@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Slide = { src: string; alt: string };
 
@@ -32,16 +32,35 @@ export function ImageCarousel({
 }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
   const count = images.length;
 
+  // Only run while on screen, and start again from the FIRST photo each time it scrolls
+  // into view — otherwise a card below the fold has already moved on by the time it's seen.
   useEffect(() => {
-    if (paused || count < 2) return;
+    const el = rootRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        setVisible(entry.isIntersecting);
+        if (!entry.isIntersecting) setIndex(0);
+      },
+      { threshold: 0.5 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!visible || paused || count < 2) return;
     const id = setInterval(() => setIndex((i) => (i + 1) % count), intervalMs);
     return () => clearInterval(id);
-  }, [paused, count, intervalMs]);
+  }, [visible, paused, count, intervalMs]);
 
   return (
     <div
+      ref={rootRef}
       className="absolute inset-0"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
